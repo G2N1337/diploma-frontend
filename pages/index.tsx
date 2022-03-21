@@ -34,7 +34,7 @@ const Button = styled.button`
 	}
 `;
 const Home: NextPage = () => {
-	const { user, setUser } = useContext(UserContext);
+	//@ts-ignore
 
 	return (
 		<Page>

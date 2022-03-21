@@ -18,6 +18,7 @@ const TextContainer = styled.div`
 	margin: 35px;
 `;
 const Profile: React.FC = () => {
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 
 	return (
@@ -25,6 +26,7 @@ const Profile: React.FC = () => {
 			<TextContainer>
 				<p>{user.fullName}</p>
 				<p>{user.phone}</p>
+				<p>{user.email}</p>
 			</TextContainer>
 		</BlackBox>
 	);

@@ -48,7 +48,11 @@ const RegisterPage: NextPage = () => {
 	);
 	function submit(e: any) {
 		e.preventDefault();
-		if (password === confirmPassword && isEmail(email)) {
+		if (
+			password === confirmPassword &&
+			isEmail(email) &&
+			password.length >= 6
+		) {
 			//@ts-ignore
 			mutation.mutate({
 				login: login,
@@ -58,12 +62,13 @@ const RegisterPage: NextPage = () => {
 				phone: phone,
 			});
 		} else {
-			//@ts-ignore
 			setError('Пароли не совпадают!');
 		}
 		if (!isEmail(email)) {
-			//@ts-ignore
 			setError('E-Mail введен не правильно!');
+		}
+		if (password.length < 6) {
+			setError('Пароль должен быть минимум 6 символов');
 		}
 	}
 	return (

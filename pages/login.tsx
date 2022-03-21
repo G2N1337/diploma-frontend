@@ -24,7 +24,7 @@ const LoginPage: NextPage = () => {
 	const [login, setLogin] = useState('');
 	const [password, setPassword] = useState('');
 	const router = useRouter();
-
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const mutation = useMutation(
 		async () => {
@@ -42,6 +42,8 @@ const LoginPage: NextPage = () => {
 	);
 	function submit(e: any) {
 		e.preventDefault();
+		//@ts-ignore
+
 		mutation.mutate({ login: login, password: password });
 	}
 	return (
