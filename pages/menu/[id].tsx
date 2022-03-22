@@ -77,9 +77,7 @@ const Menu: React.FC = () => {
 
   return (
     <Page>
-      <Headline>
-        <h1>{menuTypes?.name}</h1>
-      </Headline>
+      <Headline>{menuTypes?.name && <h1>{menuTypes?.name}</h1>}</Headline>
       <Container>
         <InfoContainer>
           {!!menuTypes &&
