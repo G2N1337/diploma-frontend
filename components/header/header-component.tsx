@@ -19,6 +19,7 @@ const HeaderTop = styled.div`
 const Selector = styled(Select)`
 	margin: 0 5px 0 5px;
 	font-weight: 600;
+	text-align: center;
 	.css-1s2u09g-control {
 		background-color: #c4c4c4;
 		min-width: 225px;
@@ -51,10 +52,14 @@ const HeaderBottom = styled.div`
 `;
 const Button = styled.button`
 	width: 110px;
+	border-radius: 4px;
 	height: 38px;
 	border: none;
 	background: #c4c4c4;
+	font-weight: 600;
 	margin-top: 15px;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 	margin-left: 25px;
 	margin-right: 25px;
 
@@ -140,13 +145,22 @@ const HeaderComponent = () => {
 				<FunContainer>
 					<Selector
 						options={entertainmentsList}
+						isSearchable={false}
 						placeholder={'Развлечения'}
 						onChange={(e: any) => {
 							push(`/entertainment/${e.value}`);
 						}}
 					/>
-					<Selector options={entertainmentsList} placeholder={'Праздники'} />
-					<Selector options={entertainmentsList} placeholder={'Меню'} />
+					<Selector
+						isSearchable={false}
+						options={entertainmentsList}
+						placeholder={'Праздники'}
+					/>
+					<Selector
+						isSearchable={false}
+						options={entertainmentsList}
+						placeholder={'Меню'}
+					/>
 				</FunContainer>
 				<ContactContainer>
 					<Button>Акции</Button>

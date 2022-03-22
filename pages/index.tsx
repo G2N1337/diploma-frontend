@@ -25,7 +25,11 @@ const PhotoBackground = styled.div`
 	background: #e6e1e1;
 `;
 const Button = styled.button`
+	border-radius: 4px;
 	width: 245px;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	font-weight: 600;
 	height: 63px;
 	background: #c4c4c4;
 	border: none;

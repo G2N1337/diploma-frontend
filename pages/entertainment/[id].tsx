@@ -10,12 +10,23 @@ const Page = styled.div`
 	flex-direction: column;
 `;
 const Headline = styled.div`
-	height: 220px;
+	height: 250px;
 	display: flex;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	background-color: #e6e1e1;
+	background-image: url('https://www.sgu.ru/sites/default/files/depnews/image/2015/02/-.png');
+	background-repeat: no-repeat;
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-position: center; /* Center the image */
+
+	h1 {
+		background: #c1c1c1;
+		border-radius: 4px;
+		padding: 10px;
+		backdrop-filter: blur(10px);
+	}
 `;
 const Container = styled.div`
 	background-color: #c4c4c4;
@@ -88,3 +99,23 @@ export const getServerSideProps: GetServerSideProps = async (
 	};
 };
 export default Entertainment;
+// export async function getStaticPaths() {
+// 	const list = await axios.get(`http://localhost:5000/entertainment`);
+// 	interface IEntertainment {
+// 		_id: string;
+// 	}
+// 	return list.data?.map((item: IEntertainment) => ({
+// 		params: {
+// 			id: item?._id,
+// 		},
+// 	}));
+// }
+// export const getStaticProps: GetStaticProps = async (
+// 	context: GetStaticPropsContext
+// ) => {
+// 	return {
+// 		props: {
+// 			key: context.params?.id,
+// 		},
+// 	};
+// };

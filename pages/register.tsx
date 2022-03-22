@@ -8,17 +8,46 @@ import isEmail from 'validator/lib/isEmail';
 
 import axios from 'axios';
 import { useMutation } from 'react-query';
+import Link from 'next/link';
 const Form = styled.div`
 	min-height: 150px;
-	width: 200px;
+	width: 250px;
 	display: flex;
 	flex-direction: column;
+	text-align: center;
 `;
 const Page = styled.div`
 	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+`;
+const Input = styled.input`
+	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
+	border-radius: 4px;
+	padding: 0.6rem 1.5rem;
+	border: 0.3px dotted gray;
+	background-color: white;
+	height: 30px;
+`;
+const Button = styled.button`
+	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
+	border-radius: 4px;
+	padding: 0.6rem 1.5rem;
+	border: 1px dotted gray;
+	background-color: #c4c4c4;
+	height: 40px;
+	cursor: pointer;
+`;
+const Error = styled.p`
+	color: #f47174;
+	font-weight: 600;
+	font-size: 24px;
+`;
+const Anchor = styled.a`
+	cursor: pointer;
+	font-weight: 600;
+	margin-top: 15px;
 `;
 const RegisterPage: NextPage = () => {
 	const [login, setLogin] = useState('');
@@ -75,7 +104,7 @@ const RegisterPage: NextPage = () => {
 		<Page>
 			<Form onSubmit={(e) => submit(e)}>
 				<label>Логин</label>
-				<input
+				<Input
 					type='text'
 					value={login}
 					onChange={(e) => {
@@ -83,7 +112,7 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<label>Пароль</label>
-				<input
+				<Input
 					value={password}
 					type='password'
 					onChange={(e) => {
@@ -91,7 +120,7 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<label>Подтвердите пароль</label>
-				<input
+				<Input
 					value={confirmPassword}
 					type='password'
 					onChange={(e) => {
@@ -99,7 +128,7 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<label>ФИО</label>
-				<input
+				<Input
 					value={fullName}
 					type='text'
 					onChange={(e) => {
@@ -107,7 +136,7 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<label>Электронная почта</label>
-				<input
+				<Input
 					value={email}
 					type='text'
 					onChange={(e) => {
@@ -116,7 +145,7 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<label>Телефон</label>
-				<input
+				<Input
 					value={phone}
 					type='text'
 					onChange={(e) => {
@@ -124,11 +153,14 @@ const RegisterPage: NextPage = () => {
 					}}
 				/>
 				<br />
-				<button type='submit' onClick={(e) => submit(e)}>
+				<Button type='submit' onClick={(e) => submit(e)}>
 					Создать аккаунт
-				</button>
+				</Button>
+				<Link href='/login'>
+					<Anchor>У меня есть аккаунт</Anchor>
+				</Link>
 
-				<p>{error?.length > 0 && error}</p>
+				<Error>{error?.length > 0 && error}</Error>
 			</Form>
 		</Page>
 	);

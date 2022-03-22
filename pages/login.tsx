@@ -10,15 +10,38 @@ import { useMutation } from 'react-query';
 import Link from 'next/link';
 const Form = styled.div`
 	min-height: 150px;
-	width: 200px;
+	width: 250px;
 	display: flex;
 	flex-direction: column;
+	text-align: center;
 `;
 const Page = styled.div`
 	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+`;
+const Input = styled.input`
+	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
+	border-radius: 4px;
+	padding: 0.6rem 1.5rem;
+	border: 0.3px dotted gray;
+	background-color: white;
+	height: 30px;
+`;
+const Button = styled.button`
+	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
+	border-radius: 4px;
+	padding: 0.6rem 1.5rem;
+	border: 1px dotted gray;
+	background-color: #c4c4c4;
+	cursor: pointer;
+	height: 40px;
+`;
+const Anchor = styled.a`
+	font-weight: 600;
+	cursor: pointer;
+	margin-top: 15px;
 `;
 const LoginPage: NextPage = () => {
 	const [login, setLogin] = useState('');
@@ -50,7 +73,7 @@ const LoginPage: NextPage = () => {
 		<Page>
 			<Form onSubmit={(e) => submit(e)}>
 				<label>Логин</label>
-				<input
+				<Input
 					type='text'
 					value={login}
 					onChange={(e) => {
@@ -58,7 +81,7 @@ const LoginPage: NextPage = () => {
 					}}
 				/>
 				<label>Пароль</label>
-				<input
+				<Input
 					value={password}
 					type='password'
 					onChange={(e) => {
@@ -66,11 +89,11 @@ const LoginPage: NextPage = () => {
 					}}
 				/>
 				<br />
-				<button type='submit' onClick={(e) => submit(e)}>
+				<Button type='submit' onClick={(e) => submit(e)}>
 					Войти
-				</button>
+				</Button>
 				<Link href={'/register'}>
-					<a>Создать новый аккаунт</a>
+					<Anchor>Создать новый аккаунт</Anchor>
 				</Link>
 			</Form>
 		</Page>
