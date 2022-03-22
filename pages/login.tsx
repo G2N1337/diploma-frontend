@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../context';
 import { useRouter } from 'next/router';
@@ -49,6 +49,11 @@ const LoginPage: NextPage = () => {
 	const router = useRouter();
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
+	useEffect(() => {
+		if (user) {
+			router.push('/');
+		}
+	});
 	const mutation = useMutation(
 		async () => {
 			return await axios.post(`http://localhost:5000/users/login`, {

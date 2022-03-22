@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../context';
 import { useRouter } from 'next/router';
@@ -50,6 +50,15 @@ const Anchor = styled.a`
 	margin-top: 15px;
 `;
 const RegisterPage: NextPage = () => {
+	interface IUser {
+		email: string;
+		fullName: string;
+		login: string;
+		phone: string;
+		role: string;
+		token: string;
+		_id: string;
+	}
 	const [login, setLogin] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -57,7 +66,15 @@ const RegisterPage: NextPage = () => {
 	const [email, setEmail] = useState('');
 	const [phone, setPhone] = useState('');
 	const [error, setError] = useState<string>('');
+	//@ts-ignore
+	const { user } = useContext(UserContext);
+
 	const router = useRouter();
+	useEffect(() => {
+		if (user) {
+			router.push('/');
+		}
+	});
 	const mutation = useMutation(
 		async () => {
 			return await axios.post(`http://localhost:5000/users`, {
