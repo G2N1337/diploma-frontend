@@ -96,11 +96,28 @@ interface IEntertainment {
 }
 const HeaderComponent = () => {
 	const [entertainmentsList, setEntertainmentsList] = useState([]);
+	const [menuList, setMenuList] = useState([]);
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
-	const { pathname, push, reload } = useRouter();
+	const { pathname, push } = useRouter();
 	useQuery(
-		'users',
+		'menus',
+		async () => {
+			return await axios.get(`http://localhost:5000/menu/type`);
+		},
+		{
+			onSuccess: (e) => {
+				setMenuList(
+					e.data?.map((item: IEntertainment) => ({
+						value: item?._id,
+						label: item?.name,
+					}))
+				);
+			},
+		}
+	);
+	useQuery(
+		'entertainments',
 		async () => {
 			return await axios.get(`http://localhost:5000/entertainment`);
 		},
@@ -115,6 +132,7 @@ const HeaderComponent = () => {
 			},
 		}
 	);
+
 	return (
 		<div>
 			<HeaderTop>
@@ -157,9 +175,12 @@ const HeaderComponent = () => {
 						placeholder={'Праздники'}
 					/>
 					<Selector
+						options={menuList}
 						isSearchable={false}
-						options={entertainmentsList}
 						placeholder={'Меню'}
+						onChange={(e: any) => {
+							push(`/menu/${e.value}`);
+						}}
 					/>
 				</FunContainer>
 				<ContactContainer>

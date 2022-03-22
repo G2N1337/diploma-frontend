@@ -48,25 +48,33 @@ const InfoContainer = styled.div`
 const Paragraph = styled.p`
 	width: 350px;
 `;
-const Entertainment: React.FC = () => {
-	interface IEntertainment {
+const Menu: React.FC = () => {
+	interface IMenu {
 		name: string;
 		price: string;
-		workTime: string;
+		count: string;
 		description: string;
 	}
-	const [entertainments, setEntertainments] = useState<IEntertainment>();
+	const [menuTypes, setMenuTypes] = useState<IMenu>();
+	const [menus, setMenus] = useState([]);
 	const router = useRouter();
-	const { id } = router.query;
 	useQuery(
-		'entertainment',
+		'menu-types',
 		async () => {
-			return await axios.get(`http://localhost:5000/entertainment/${id}`);
+			return await axios.get(`http://localhost:5000/menu/type`);
 		},
 		{
 			onSuccess: (e) => {
 				console.log(e.data);
-				setEntertainments(e.data);
+				setMenuTypes(e.data);
+				// setMenus(Object.keys.e.data.filter((item) => {
+				// 	return
+				// }
+				// )
+				// );
+				const newArr = e.data.map((item) => {
+					console.log(Object.keys(item));
+				});
 			},
 		}
 	);
@@ -74,16 +82,16 @@ const Entertainment: React.FC = () => {
 	return (
 		<Page>
 			<Headline>
-				<h1>{entertainments?.name}</h1>
+				<h1>name</h1>
 			</Headline>
 			<Container>
 				<InfoContainer>
 					<InfoBox>
-						<p>{entertainments?.name}</p>
-						<p>{entertainments?.price} рублей</p>
-						<p>{entertainments?.workTime}</p>
+						<p>name</p>
+						<p>price рублей</p>
+						<p>count</p>
 					</InfoBox>
-					<Paragraph>{entertainments?.description}</Paragraph>
+					<Paragraph>{menuTypes?.description}</Paragraph>
 				</InfoContainer>
 			</Container>
 		</Page>
@@ -98,13 +106,13 @@ export const getServerSideProps: GetServerSideProps = async (
 		},
 	};
 };
-export default Entertainment;
+export default Menu;
 // export async function getStaticPaths() {
-// 	const list = await axios.get(`http://localhost:5000/entertainment`);
-// 	interface IEntertainment {
+// 	const list = await axios.get(`http://localhost:5000/menu`);
+// 	interface IMenu {
 // 		_id: string;
 // 	}
-// 	return list.data?.map((item: IEntertainment) => ({
+// 	return list.data?.map((item: IMenu) => ({
 // 		params: {
 // 			id: item?._id,
 // 		},
