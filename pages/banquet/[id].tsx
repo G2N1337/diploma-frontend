@@ -5,12 +5,10 @@ import { useQuery } from 'react-query';
 import { useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 
-interface IMenu {
+interface IBanquet {
 	name: string;
-	price: string;
-	count: string;
-	menu: any;
 	description: string;
+	banquet: any;
 }
 
 const Page = styled.div`
@@ -44,9 +42,11 @@ const Container = styled.div`
 `;
 const InfoBox = styled.div`
 	background-color: #e6e1e1;
-	width: 30em;
-	height: 15em;
-	padding: 50px;
+	display: flex;
+	width: 97%;
+	padding: 2em;
+	flex-direction: row;
+	gap: 3em;
 `;
 const InfoContainer = styled.div`
 	margin: 40px 0 0 48px;
@@ -54,40 +54,56 @@ const InfoContainer = styled.div`
 	flex-direction: row;
 	gap: 10em;
 `;
+const MegaContainer = styled.div`
+	margin: 40px 0 0 48px;
+	display: flex;
+	flex-direction: column;
+	height: 200px;
+`;
 const Paragraph = styled.p`
 	border-bottom: 1px dotted #c1c1c1;
 `;
+
 const Menu: React.FC = () => {
 	const router = useRouter();
 	const { id } = router.query;
 
-	const [menuTypes, setMenuTypes] = useState<IMenu>();
+	const [banquet, setBanquet] = useState<IBanquet>();
 
 	useQuery(
-		'menu-types',
+		'banquet',
 		async () => {
-			return await axios.get(`http://localhost:5000/menu/type/${id}`);
+			return await axios.get(`http://localhost:5000/banquet/type/${id}`);
 		},
 		{
 			onSuccess: (e) => {
-				setMenuTypes(e.data);
+				console.log(e.data);
+				setBanquet(e.data);
 			},
 		}
 	);
 
 	return (
 		<Page>
-			<Headline>{menuTypes?.name && <h1>{menuTypes?.name}</h1>}</Headline>
+			<Headline>
+				<h1>{banquet?.name}</h1>
+			</Headline>
 			<Container>
+				<MegaContainer>
+					<Paragraph>{banquet?.name}</Paragraph>
+					<Paragraph>{banquet?.description}</Paragraph>
+				</MegaContainer>
 				<InfoContainer>
-					{!!menuTypes &&
-						menuTypes?.menu.map((item: any) => (
-							<InfoBox key={item._id}>
-								<Paragraph>{item.name}</Paragraph>
-								<Paragraph>{item.price} рублей</Paragraph>
-								<Paragraph>Цена за {item.count}</Paragraph>
-							</InfoBox>
-						))}
+					<InfoBox>
+						{!!banquet &&
+							banquet?.banquet.map((item: any) => (
+								<div>
+									<Paragraph>Анимационная программа: </Paragraph>
+									<Paragraph>{item?.name}</Paragraph>
+									<Paragraph>{item?.description}</Paragraph>
+								</div>
+							))}
+					</InfoBox>
 				</InfoContainer>
 			</Container>
 		</Page>

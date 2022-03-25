@@ -97,9 +97,26 @@ interface IEntertainment {
 const HeaderComponent = () => {
 	const [entertainmentsList, setEntertainmentsList] = useState([]);
 	const [menuList, setMenuList] = useState([]);
+	const [banquetList, setBanquetList] = useState([]);
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const { pathname, push } = useRouter();
+	useQuery(
+		'banquets',
+		async () => {
+			return await axios.get(`http://localhost:5000/banquet/type`);
+		},
+		{
+			onSuccess: (e) => {
+				setBanquetList(
+					e.data?.map((item: IEntertainment) => ({
+						value: item?._id,
+						label: item?.name,
+					}))
+				);
+			},
+		}
+	);
 	useQuery(
 		'menus',
 		async () => {
@@ -170,9 +187,12 @@ const HeaderComponent = () => {
 						}}
 					/>
 					<Selector
+						options={banquetList}
 						isSearchable={false}
-						options={entertainmentsList}
 						placeholder={'Праздники'}
+						onChange={(e: any) => {
+							push(`/banquet/${e.value}`);
+						}}
 					/>
 					<Selector
 						options={menuList}
