@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { UserContext } from '../context';
+import { ModalProvider } from 'styled-react-modal';
 
 import Page from '../components/page/page-component';
 
@@ -28,9 +29,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<>
 			<QueryClientProvider client={queryClient}>
 				<UserContext.Provider value={{ user, setUser }}>
-					<Page>
-						<Component {...pageProps} />
-					</Page>
+					<ModalProvider>
+						<Page>
+							<Component {...pageProps} />
+						</Page>
+					</ModalProvider>
 				</UserContext.Provider>
 			</QueryClientProvider>
 		</>
