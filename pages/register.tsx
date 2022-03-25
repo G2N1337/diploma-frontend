@@ -71,7 +71,7 @@ const RegisterPage: NextPage = () => {
 
 	const router = useRouter();
 	useEffect(() => {
-		if (user) {
+		if (user?.login) {
 			router.push('/');
 		}
 	});
@@ -94,11 +94,7 @@ const RegisterPage: NextPage = () => {
 	);
 	function submit(e: any) {
 		e.preventDefault();
-		if (
-			password === confirmPassword &&
-			isEmail(email) &&
-			password.length >= 6
-		) {
+		if (password === confirmPassword && isEmail(email) && password.length >= 6) {
 			//@ts-ignore
 			mutation.mutate({
 				login: login,

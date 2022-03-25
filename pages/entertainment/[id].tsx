@@ -1,13 +1,37 @@
 import styled from 'styled-components';
+import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import { ToastContainer, toast } from 'react-toastify';
+import { UserContext } from '../../context';
+import 'react-toastify/dist/ReactToastify.css';
+import Modal from 'react-modal';
+
 const Page = styled.div`
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+`;
+
+const Button = styled.button`
+	width: 110px;
+	border-radius: 4px;
+	height: 38px;
+	border: none;
+	background: #fff;
+	font-weight: 600;
+	margin-top: 15px;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	margin-left: 25px;
+	margin-right: 25px;
+
+	&:hover {
+		cursor: pointer;
+	}
 `;
 const Headline = styled.div`
 	height: 250px;
@@ -48,7 +72,15 @@ const InfoContainer = styled.div`
 const Paragraph = styled.p`
 	width: 350px;
 `;
+const ModalContent = styled.div`
+	.ReactModal__Content {
+		width: fit-content;
+	}
+`;
 const Entertainment: React.FC = () => {
+	//@ts-ignore
+	const { user, setUser } = useContext(UserContext);
+	const [openModal, setOpenModal] = useState(false);
 	interface IEntertainment {
 		name: string;
 		price: string;
@@ -73,6 +105,11 @@ const Entertainment: React.FC = () => {
 
 	return (
 		<Page>
+			<ModalContent>
+				<Modal isOpen={openModal} contentLabel='Example Modal'>
+					<p>пидарок</p>
+				</Modal>
+			</ModalContent>
 			<Headline>
 				<h1>{entertainments?.name}</h1>
 			</Headline>
@@ -84,8 +121,20 @@ const Entertainment: React.FC = () => {
 						<p>{entertainments?.workTime}</p>
 					</InfoBox>
 					<Paragraph>{entertainments?.description}</Paragraph>
+					<Button
+						onClick={() => {
+							if (!user?.login) {
+								toast.error('Нужно войти в учетную запись для создания заказа');
+							} else {
+								setOpenModal(true);
+							}
+						}}
+					>
+						Заказать
+					</Button>
 				</InfoContainer>
 			</Container>
+			<ToastContainer position='bottom-left' theme='dark' />
 		</Page>
 	);
 };

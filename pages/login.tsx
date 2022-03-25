@@ -50,7 +50,7 @@ const LoginPage: NextPage = () => {
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	useEffect(() => {
-		if (user) {
+		if (user?.login) {
 			router.push('/');
 		}
 	});
