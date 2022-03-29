@@ -64,6 +64,7 @@ const LoginPage: NextPage = () => {
 		{
 			onSuccess: (e) => {
 				setUser(e.data);
+				sessionStorage.setItem('token', e.data.token);
 				router.push('/');
 			},
 		}

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { ToastContainer, toast } from 'react-toastify';
@@ -133,6 +133,10 @@ const Model = Modal.styled`
 	background-color: white;
 	border-radius: 15px;
 `;
+const PriceLabel = styled.label`
+	margin: 0;
+	font-size: 10pt;
+`;
 const Input = styled.input`
 	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
 	border-radius: 4px;
@@ -174,9 +178,10 @@ const Form = styled.form`
 const Entertainment: React.FC = () => {
 	interface IEntertainment {
 		name: string;
-		price: string;
+		price: string | number;
 		workTime: string;
 		description: string;
+		_id: string;
 	}
 	interface IEntertainmentList {
 		_id: string;
@@ -190,6 +195,9 @@ const Entertainment: React.FC = () => {
 	const [name, setName] = useState(user?.fullName);
 	const [entField, setEntField] = useState('');
 	const [description, setDescription] = useState('');
+	const [priceData, setPriceData] = useState<Number>();
+	const [time, setTime] = useState('');
+	const [date, setDate] = useState('');
 	const [entertainments, setEntertainments] = useState<IEntertainment>();
 	const router = useRouter();
 	const { id } = router.query;
@@ -200,7 +208,6 @@ const Entertainment: React.FC = () => {
 		},
 		{
 			onSuccess: (e) => {
-				console.log(e.data);
 				setEntertainments(e.data);
 			},
 		}
@@ -224,14 +231,64 @@ const Entertainment: React.FC = () => {
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
-	const submit = (e) => {
+	const mutation = useMutation(
+		async () => {
+			return await axios.post(
+				`http://localhost:5000/entorder`,
+				{
+					id,
+					name,
+					entName: entField,
+					price: priceData * parseInt(time),
+					workTime: time + '|' + date,
+					description,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				}
+			);
+		},
+		{
+			onSuccess: (e) => {
+				toast.success(
+					'Заявка на проведение развлечения успешно отправлена! Вы можете посмотреть свой заказ в личном кабинете.'
+				);
+				console.log(e);
+			},
+		}
+	);
+	const submit = (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		console.log({
 			id: user._id,
 			name,
 			entField,
 			description,
+			price: priceData * parseInt(time),
+			workTime: time + '|' + date,
 		});
+		if (name && entField && date && time) {
+			//@ts-ignore
+			mutation.mutate({
+				id: user._id,
+				name: name,
+				entField: entField,
+				price: priceData * parseInt(time),
+				workTime: time + '|' + date,
+				description: description,
+			});
+		}
+		if (!name) {
+			toast.error('Имя пустое!');
+		}
+		if (!entField) {
+			toast.error('Выберите вид развлечения!');
+		}
+		if (time && parseInt(time) < 1) {
+			toast.error('Укажите правильное время!');
+		}
 	};
 	return (
 		<Page>
@@ -248,11 +305,21 @@ const Entertainment: React.FC = () => {
 							}}
 						/>
 						<Input
-							value={name}
-							placeholder={'Дата и время'}
+							type='number'
+							value={time}
+							placeholder={'Время (часы)'}
 							width={75}
 							onChange={(e) => {
-								setName(e.target.value);
+								setTime(e.target.value);
+							}}
+						/>
+						<Input
+							type='date'
+							value={date}
+							placeholder={'День'}
+							width={75}
+							onChange={(e) => {
+								setDate(e.target.value);
 							}}
 						/>
 						<Selector
@@ -263,6 +330,11 @@ const Entertainment: React.FC = () => {
 							onChange={(e: any) => {
 								// console.log(e);
 								setEntField(e.label);
+								axios
+									.get(`http://localhost:5000/entertainment/${e.value}`)
+									.then((data) => {
+										setPriceData(data.data.price);
+									});
 							}}
 						/>
 						<BigInput
@@ -274,6 +346,14 @@ const Entertainment: React.FC = () => {
 								setDescription(e.target.value);
 							}}
 						/>
+						<PriceLabel>Цена составляет {priceData} руб. за 1 час</PriceLabel>
+						{parseInt(time) > 0 ? (
+							<PriceLabel>
+								Сумма будет составлять {priceData * parseInt(time)} Руб
+							</PriceLabel>
+						) : (
+							<PriceLabel>Нужно выбрать правильное время</PriceLabel>
+						)}
 						<ButtonSubmit
 							width={300}
 							onClick={() => {
