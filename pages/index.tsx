@@ -7,6 +7,7 @@ import NewsComponent from '../components/news/news-component';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import HolidayOrder from '../components/forms/holiday-order.component';
+import BanquetModal from '../components/modal/banquet-modal.component';
 const Form = styled.div`
   min-height: 150px;
   width: 200px;
@@ -66,6 +67,7 @@ const Home: NextPage = () => {
       },
     }
   );
+
   return (
     <Page>
       <PhotoBackground>
@@ -85,7 +87,6 @@ const Home: NextPage = () => {
           />
         ))}
       </NewsContainer>
-      <HolidayOrder />
     </Page>
   );
 };

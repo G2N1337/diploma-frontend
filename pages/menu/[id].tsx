@@ -23,6 +23,11 @@ interface IMenu {
   description: string;
 }
 
+export interface IOrderItem {
+  menu: string;
+  count: number;
+}
+
 const Page = styled.div`
   height: 100%;
   display: flex;
@@ -41,6 +46,8 @@ const ButtonSubmit = styled.button<IWHData>`
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   margin-left: 25px;
   margin-right: 25px;
+
+  cursor: pointer;
 
   &:hover {
     cursor: pointer;
@@ -202,9 +209,15 @@ const Menu: React.FC = () => {
   const [priceData, setPriceData] = useState<number>(0);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
+
   const [menuTypes, setMenuTypes] = useState<IMenu>();
   const [menuFields, setMenuFields] = useState();
-  const [orderItem, setOrderItem] = useState<any[]>([]);
+
+  const [menu, setMenu] = useState<any[]>([]);
+
+  //Заказ
+  const [order, setOrder] = useState<IOrderItem[]>([]);
+
   const toggleModal = (e: React.SyntheticEvent) => {
     setOpenModal(!openModal);
   };
@@ -235,29 +248,26 @@ const Menu: React.FC = () => {
       },
     }
   );
-  const submit = (e: React.SyntheticEvent) => {
+
+  const submit = async (e: React.SyntheticEvent) => {
+    console.log({ order });
     e.preventDefault();
-    // if (name && menuField && date && time) {
-    // 	//@ts-ignore
-    // 	mutation.mutate({
-    // 		id: user._id,
-    // 		name: name,
-    // 		menuField: menuField,
-    // 		// @ts-ignore
-    // 		price: priceData * parseInt(time),
-    // 		workTime: time + '|' + date,
-    // 		description: description,
-    // 	});
-    // }
-    // if (!name) {
-    // 	toast.error('Имя пустое!');
-    // }
-    // if (!menuField) {
-    // 	toast.error('Выберите вид развлечения!');
-    // }
-    // if (time && parseInt(time) < 1) {
-    // 	toast.error('Укажите правильное время!');
-    // }
+
+    if (order.length > 0) {
+      await axios.post(
+        `http://localhost:5000/menuorder`,
+        {
+          name: `Заказ ${Math.round(Math.random() * 10000)}`,
+          user: user._id,
+          orders: JSON.stringify(order),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        }
+      );
+    }
   };
   return (
     <Page>
@@ -295,12 +305,12 @@ const Menu: React.FC = () => {
                   .get(`http://localhost:5000/menu/type/${e.value}`)
                   .then((data) => {
                     console.log(data.data.menu);
-                    setOrderItem(data.data.menu);
+                    setMenu(data.data.menu);
                   });
               }}
             />
-            {orderItem?.length > 0 ? (
-              orderItem?.map(
+            {menu?.length > 0 ? (
+              menu?.map(
                 (item: {
                   _id: string;
                   name: string;
@@ -310,12 +320,15 @@ const Menu: React.FC = () => {
                   <FoodContainer
                     key={item._id}
                     item={item}
-                    addFunc={() => {}}
+                    orderList={order}
+                    setOrderList={(items: IOrderItem[]) => {
+                      setOrder(items);
+                    }}
                   ></FoodContainer>
                 )
               )
             ) : (
-              <Paragraph>нету нихуя</Paragraph>
+              <Paragraph>Выберите меню</Paragraph>
             )}
             {/* <PriceLabel>Цена составляет {priceData} руб. за 1 час</PriceLabel>
 						{parseInt(time) > 0 ? (

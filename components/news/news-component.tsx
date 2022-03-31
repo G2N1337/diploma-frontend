@@ -17,7 +17,7 @@ const Image = styled.img`
 const NewsComponent = ({ name, description, picture }: INews) => {
   return (
     <MainContainter>
-      <Image src={picture} />
+      <Image src={`https://via.placeholder.com/300x300?text=${picture}`} />
       <p>{name}</p>
       <p>{description}</p>
     </MainContainter>

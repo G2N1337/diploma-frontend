@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useQuery } from 'react-query';
 import { useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import BanquetModal from '../../components/modal/banquet-modal.component';
 
 interface IBanquet {
   name: string;
@@ -64,11 +65,26 @@ const Paragraph = styled.p`
   border-bottom: 1px dotted #c1c1c1;
 `;
 
+const OrderButton = styled.button`
+  padding: 0.6em 1.1em;
+  background-color: #696969;
+  color: #fff;
+  margin-left: 48px;
+  margin-top: 50px;
+  border: none;
+  cursor: pointer;
+`;
+
 const Menu: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  const [banquetModal, setModal] = useState<boolean>(false);
   const [banquet, setBanquet] = useState<IBanquet>();
+
+  const toggleModal = () => {
+    setModal(false);
+  };
 
   useQuery(
     'banquet',
@@ -103,6 +119,15 @@ const Menu: React.FC = () => {
               ))}
           </InfoBox>
         </InfoContainer>
+        <OrderButton
+          type='button'
+          onClick={() => {
+            setModal(true);
+          }}
+        >
+          Оставить заявку
+        </OrderButton>
+        <BanquetModal openModal={banquetModal} toggleModal={toggleModal} />
       </Container>
     </Page>
   );

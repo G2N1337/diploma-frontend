@@ -122,12 +122,12 @@ const InfoContainer = styled.div`
 const Paragraph = styled.p`
   width: 350px;
 `;
-const ModalContent = styled.div`
+export const ModalContent = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: center;
 `;
-const Model = Modal.styled`
+export const Model = Modal.styled`
 	width: 30%;	
 	height: 70%;
 	background-color: white;
@@ -137,7 +137,11 @@ const PriceLabel = styled.label`
   margin: 0;
   font-size: 10pt;
 `;
-const Input = styled.input<{ width?: number; height?: number }>`
+const Input = styled.input<{
+  width?: number;
+  height?: number;
+  onChange?: (e: any) => void;
+}>`
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
   border-radius: 4px;
   padding: 0.6rem 1.5rem;
@@ -147,7 +151,12 @@ const Input = styled.input<{ width?: number; height?: number }>`
   height: ${(props) => (props.height ? props.height : 5)}%;
   width: ${(props) => props.width}%;
 `;
-const BigInput = styled.textarea<{ width?: number; height?: number }>`
+
+const BigInput = styled.textarea<{
+  width?: number;
+  height?: number;
+  onChange?: (e: any) => void;
+}>`
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
   border-radius: 4px;
   padding: 0.6rem 1.5rem;
@@ -228,9 +237,11 @@ const Entertainment: React.FC = () => {
       },
     }
   );
+
   const toggleModal = (e: React.SyntheticEvent) => {
     setOpenModal(!openModal);
   };
+
   const mutation = useMutation(
     async () => {
       return await axios.post(
