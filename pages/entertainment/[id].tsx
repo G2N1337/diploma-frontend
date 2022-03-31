@@ -154,7 +154,10 @@ const BigInput = styled.textarea`
 	border: 0.3px dotted gray;
 	background-color: white;
 	margin-bottom: 15px;
+	//@ts-ignore
 	height: ${(props) => (props.height ? props.height : 5)}%;
+	//@ts-ignore
+
 	width: ${(props) => props.width}%;
 	resize: none;
 `;
@@ -261,20 +264,13 @@ const Entertainment: React.FC = () => {
 	);
 	const submit = (e: React.SyntheticEvent) => {
 		e.preventDefault();
-		console.log({
-			id: user._id,
-			name,
-			entField,
-			description,
-			price: priceData * parseInt(time),
-			workTime: time + '|' + date,
-		});
 		if (name && entField && date && time) {
 			//@ts-ignore
 			mutation.mutate({
 				id: user._id,
 				name: name,
 				entField: entField,
+				// @ts-ignore
 				price: priceData * parseInt(time),
 				workTime: time + '|' + date,
 				description: description,
