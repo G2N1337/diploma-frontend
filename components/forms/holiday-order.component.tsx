@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useQuery } from 'react-query';
 
 import axios from 'axios';
 import styled from 'styled-components';
+import { UserContext } from '../../context';
 
 interface IProps {}
 
@@ -13,6 +14,10 @@ const InputRow = styled.div``;
 
 export default function HolidayOrder({}: IProps) {
   let today = new Date().toLocaleDateString();
+
+  //@ts-ignore
+  const { user } = useContext(UserContext);
+
   const [data, setData] = useState<{
     name: string;
     holiday: string;
@@ -28,6 +33,10 @@ export default function HolidayOrder({}: IProps) {
     date: today,
     commentary: '',
   });
+
+  React.useEffect(() => {
+    setData({ ...data, name: user?.fullName });
+  }, [user]);
 
   //GetHolidays
   const [holidays, setHolidays] = useState([]);
@@ -108,8 +117,10 @@ export default function HolidayOrder({}: IProps) {
               Выберите праздник
             </option>
             {holidays &&
-              holidays.map((holiday: { name: string }) => (
-                <option value={holiday.name}>{holiday.name}</option>
+              holidays.map((holiday: { name: string; _id: string }) => (
+                <option key={holiday._id} value={holiday.name}>
+                  {holiday.name}
+                </option>
               ))}
           </select>
         </label>
@@ -127,9 +138,13 @@ export default function HolidayOrder({}: IProps) {
               Выберите развлечение
             </option>
             {entertainments &&
-              entertainments.map((entertainment: { name: string }) => (
-                <option value={entertainment.name}>{entertainment.name}</option>
-              ))}
+              entertainments.map(
+                (entertainment: { name: string; _id: string }) => (
+                  <option key={entertainment._id} value={entertainment.name}>
+                    {entertainment.name}
+                  </option>
+                )
+              )}
           </select>
         </label>
       </InputRow>
@@ -144,8 +159,10 @@ export default function HolidayOrder({}: IProps) {
               Выберите меню
             </option>
             {menus &&
-              menus.map((menu: { name: string }) => (
-                <option value={menu.name}>{menu.name}</option>
+              menus.map((menu: { name: string; _id: string }) => (
+                <option key={menu._id} value={menu.name}>
+                  {menu.name}
+                </option>
               ))}
           </select>
         </label>
@@ -161,8 +178,10 @@ export default function HolidayOrder({}: IProps) {
               Выберите меню
             </option>
             {menus &&
-              menus.map((menu: { name: string }) => (
-                <option value={menu.name}>{menu.name}</option>
+              menus.map((menu: { name: string; _id: string }) => (
+                <option key={menu._id} value={menu.name}>
+                  {menu.name}
+                </option>
               ))}
           </select>
         </label>
