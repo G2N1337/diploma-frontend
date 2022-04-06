@@ -8,9 +8,7 @@ import { UserContext } from '../../context';
 import { toast, ToastContainer } from 'react-toastify';
 import Modal from 'styled-react-modal';
 import Select from 'react-select';
-import FoodContainer from '../../components/food-container/food-container.component';
 import 'react-toastify/dist/ReactToastify.css';
-import MenuContainer from '../../components/food-container/menu-container.component';
 
 interface IWHData {
 	width?: number;
@@ -27,13 +25,15 @@ interface IMenu {
 
 export interface IOrderItem {
 	menu: string;
-	count: number;
+	price: number;
+	name: string;
 }
 
 const Page = styled.div`
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	margin: 15px;
 `;
 const ButtonSubmit = styled.button<IWHData>`
 	width: ${(props) => (props.width ? props.width : 110)}px;
@@ -196,7 +196,18 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
-
+const EntertainmentList = styled.div`
+	display: flex;
+	flex-direction: row;
+	width: 70%;
+	justify-content: space-between;
+`;
+const EntertainmentContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-bottom: 1px dotted black;
+`;
 const Menu: React.FC = () => {
 	const router = useRouter();
 	const { id } = router.query;
@@ -204,19 +215,7 @@ const Menu: React.FC = () => {
 
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
-
 	const [name, setName] = useState(user?.fullName);
-	const [menuField, setMenuField] = useState('');
-	const [description, setDescription] = useState('');
-	const [priceData, setPriceData] = useState<number>(0);
-	const [price, setPrice] = useState<number>(0);
-
-	const [time, setTime] = useState('');
-	const [date, setDate] = useState('');
-	const [unique, setUnique] = useState(false);
-	const [menuTypes, setMenuTypes] = useState<IMenu>();
-	const [menuFields, setMenuFields] = useState();
-
 	const [menu, setMenu] = useState<any[]>([]);
 
 	//Заказ
@@ -225,169 +224,61 @@ const Menu: React.FC = () => {
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
-	const mutation = useMutation(
-		async () => {
-			return await axios.post(
-				`http://localhost:5000/menuorder`,
-				{
-					name: `Заказ ${Math.round(Math.random() * 10000)}`,
-					user: user._id,
-					orders: JSON.stringify(order),
-					unique: unique ? true : false,
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-					},
-				}
-			);
-		},
-		{
-			onSuccess: (e) => {
-				console.log(e.data);
-				toast.success(`Заказ успешно создан! Название: ${e.data.name}`);
-			},
-		}
-	);
+
 	useQuery(
 		'menu-idk',
 		async () => {
-			return await axios.get(`http://localhost:5000/menu/type`);
+			return await axios.get(`http://localhost:5000/order-ent/${id}`, {
+				headers: {
+					Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+				},
+			});
 		},
+
 		{
 			onSuccess: (e) => {
-				setMenuFields(
-					e.data?.map((item: any) => ({
-						value: item?._id,
-						label: item?.name,
-					}))
-				);
-			},
-		}
-	);
-	useQuery(
-		'menu-types',
-		async () => {
-			return await axios.get(`http://localhost:5000/menu/type/alt/${id}`);
-		},
-		{
-			onSuccess: (e) => {
-				setMenuTypes(e.data);
+				setOrder(e.data);
+				console.log(e.data);
 			},
 		}
 	);
 
-	const submit = async (e: React.SyntheticEvent) => {
-		console.log({ order });
-		e.preventDefault();
-
-		if (order.length > 0) {
-			mutation.mutate();
-		}
-	};
 	return (
 		<Page>
-			<ModalContent>
-				<Model isOpen={openModal} onBackgroundClick={toggleModal}>
-					<Form onSubmit={(e) => submit(e)}>
-						<h1>Заказать еду</h1>
-						<Input
-							value={name}
-							placeholder={'Имя'}
-							width={75}
-							onChange={(e) => {
-								setName(e.target.value);
-							}}
-						/>
-
-						<Input
-							type='date'
-							value={date}
-							placeholder={'День'}
-							width={75}
-							onChange={(e) => {
-								setDate(e.target.value);
-							}}
-						/>
-						<Selector
-							options={menuFields}
-							isSearchable={false}
-							width={75}
-							placeholder={'Выбрать меню'}
-							onChange={(e: any) => {
-								// console.log(e);
-								setMenuField(e.label);
-								axios.get(`http://localhost:5000/menu/type/${e.value}`).then((data) => {
-									console.log(data.data.menu);
-									setMenu(data.data.menu);
-								});
-							}}
-						/>
-						<div>
-							<label>Не включать в заказ праздника (заказать отдельно)</label>
-							<input
-								type='checkbox'
-								checked={unique}
-								onChange={(e) => {
-									setUnique(!unique);
-								}}
-							></input>
-						</div>
-						{menu?.length > 0 ? (
-							menu?.map(
-								(item: {
-									_id: string;
-									name: string;
-									description: string;
-									price: number;
-								}) => (
-									<FoodContainer
-										key={item._id}
-										item={item}
-										orderList={order}
-										setOrderList={(items: IOrderItem[]) => {
-											setOrder(items);
-										}}
-									></FoodContainer>
-								)
-							)
-						) : (
-							<Paragraph>Выберите меню</Paragraph>
-						)}
-						<ButtonSubmit
-							width={300}
-							onClick={() => {
-								if (!user?.login) {
-									toast.error('Нужно войти в учетную запись для создания заказа');
-								} else {
-									setOpenModal(true);
-								}
-							}}
-						>
-							Заказать
-						</ButtonSubmit>
-					</Form>
-				</Model>
-			</ModalContent>
-			<Headline>{menuTypes?.name && <h1>{menuTypes?.name}</h1>}</Headline>
-			<Container>
-				<InfoContainer>
-					{!!menuTypes &&
-						menuTypes?.map((item: any) => <MenuContainer item={item} />)}
-					<Button
-						width={300}
-						onClick={() => {
-							if (!user?.login) {
-								toast.error('Нужно войти в учетную запись для создания заказа');
-							} else {
-								setOpenModal(true);
-							}
-						}}
-					>
-						Заказать
-					</Button>
-				</InfoContainer>
-			</Container>
+			<h1>{order?.name}</h1>
+			<h2>Состав заказа:</h2>
+			<EntertainmentContainer>
+				<EntertainmentList>
+					<div>
+						<h3>Меню:</h3>
+						<p>{order?.food?.name}</p>
+						{order?.food?.map((item) => (
+							<div>
+								<p>{item?.count}</p>
+								<p>{item?.name}</p>
+							</div>
+						))}
+						<p>{order?.menu?.price} руб</p>
+					</div>
+					<div>
+						<h3>Развлечение:</h3>
+						<p>{order?.entertainment?.name}</p>
+						<p>{order?.entertainment?.entName}</p>
+						<p>{order?.entertainment?.price} руб</p>
+					</div>
+					<div>
+						<h3>Праздник:</h3>
+						<p>{order?.banquettype?.name}</p>
+						<p>{order?.banquettype?.price}</p>
+					</div>
+					<div>
+						<h3>Программа:</h3>
+						<p>{order?.program?.name}</p>
+						<p>{order?.program?.price}</p>
+					</div>
+				</EntertainmentList>
+			</EntertainmentContainer>
+			<h1>Сумма: {order?.price} руб</h1>
 			<ToastContainer position='bottom-left' theme='dark' />
 		</Page>
 	);
