@@ -8,7 +8,6 @@ import BanquetModal from '../../components/modal/banquet-modal.component';
 import { ToastContainer } from 'react-toastify';
 import { UserContext } from '../../context';
 import ModalBanquet from '../../components/forms/modal-banquet.component';
-import ModalProgram from '../../components/forms/program.component';
 import { ModalContent, Model } from '../entertainment/[id]';
 import ProgramComponent from '../../components/program/program.component';
 interface IBanquet {
