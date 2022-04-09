@@ -108,7 +108,7 @@ const ModalProgram = ({ item, status }) => {
 			onSuccess: (e) => {
 				toast.success(`Успешно изменено`);
 				console.log(e);
-				router.push('/');
+				router.reload();
 			},
 		}
 	);
@@ -132,7 +132,7 @@ const ModalProgram = ({ item, status }) => {
 		{
 			onSuccess: (e) => {
 				toast.success(`Успешно добавлено`);
-				router.push('/');
+				router.reload();
 			},
 		}
 	);

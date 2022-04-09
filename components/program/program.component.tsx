@@ -64,7 +64,7 @@ const ProgramComponent = ({ item }) => {
 									},
 								})
 								.then(() => {
-									router.push('/');
+									router.reload();
 								})
 						}
 					>

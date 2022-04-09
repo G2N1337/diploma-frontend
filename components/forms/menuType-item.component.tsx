@@ -138,7 +138,7 @@ const MenuItem = ({ item, status, menuList }) => {
 			onSuccess: (e) => {
 				toast.success(`Успешно изменено`);
 				console.log(e);
-				router.push('/');
+				router.reload();
 			},
 		}
 	);
@@ -159,7 +159,7 @@ const MenuItem = ({ item, status, menuList }) => {
 		{
 			onSuccess: (e) => {
 				toast.success(`Успешно добавлено`);
-				router.push('/');
+				router.reload();
 			},
 		}
 	);
