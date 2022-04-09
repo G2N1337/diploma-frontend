@@ -168,6 +168,7 @@ const HeaderComponent = () => {
 					<LogoutButton
 						onClick={() => {
 							setUser({});
+							sessionStorage.removeItem('token');
 							push('/');
 						}}
 					>
@@ -204,6 +205,16 @@ const HeaderComponent = () => {
 					/>
 				</FunContainer>
 				<ContactContainer>
+					{user?.role === 'admin' ||
+						(user?.role === 'manager' && (
+							<Button
+								onClick={() => {
+									push('/manager');
+								}}
+							>
+								Меню менеджера
+							</Button>
+						))}
 					<Button>Акции</Button>
 					<Button
 						onClick={() => {

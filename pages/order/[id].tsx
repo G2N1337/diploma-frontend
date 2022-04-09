@@ -9,6 +9,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import Modal from 'styled-react-modal';
 import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
+import ChatComponent from '../../components/chat-component/chat.component';
 
 interface IWHData {
 	width?: number;
@@ -199,13 +200,14 @@ const Form = styled.form`
 const EntertainmentList = styled.div`
 	display: flex;
 	flex-direction: row;
-	width: 70%;
 	justify-content: space-between;
+	width: 100%;
 `;
 const EntertainmentContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 100%;
 	border-bottom: 1px dotted black;
 `;
 const Menu: React.FC = () => {
@@ -279,6 +281,7 @@ const Menu: React.FC = () => {
 				</EntertainmentList>
 			</EntertainmentContainer>
 			<h1>Сумма: {order?.price} руб</h1>
+			<ChatComponent user={user} chat={order?.chat} manager={false} />
 			<ToastContainer position='bottom-left' theme='dark' />
 		</Page>
 	);

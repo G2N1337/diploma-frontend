@@ -10,6 +10,7 @@ import HolidayOrder from '../components/forms/holiday-order.component';
 import BanquetModal from '../components/modal/banquet-modal.component';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ChatComponent from '../components/chat-component/chat.component';
 
 const Form = styled.div`
 	min-height: 150px;
@@ -58,14 +59,15 @@ const Span = styled.span`
 `;
 const Home: NextPage = () => {
 	const [news, setNews] = useState([]);
+	const { user, setUser } = useContext(UserContext);
 	useQuery(
 		'get-news',
 		async () => {
 			return await axios.get(`http://localhost:5000/news`);
 		},
 		{
+			refetchInterval: 1000,
 			onSuccess: (e) => {
-				console.log(e.data);
 				setNews(e.data.reverse());
 			},
 		}
@@ -73,6 +75,11 @@ const Home: NextPage = () => {
 
 	return (
 		<Page>
+			<ChatComponent
+				user={user}
+				chat={'62500704e51336f0cf16f201'}
+				manager={true}
+			/>
 			<PhotoBackground>
 				<Button>Консультация</Button>
 			</PhotoBackground>
