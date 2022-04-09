@@ -75,11 +75,6 @@ const Home: NextPage = () => {
 
 	return (
 		<Page>
-			<ChatComponent
-				user={user}
-				chat={'62500704e51336f0cf16f201'}
-				manager={true}
-			/>
 			<PhotoBackground>
 				<Button>Консультация</Button>
 			</PhotoBackground>
