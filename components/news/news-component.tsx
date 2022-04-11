@@ -15,12 +15,19 @@ interface INews {
 }
 const MainContainter = styled.div`
 	min-height: 300px;
+	width: fit-content;
 	min-width: 300px;
 `;
 const Image = styled.img`
 	min-height: 94px;
 	min-width: 135px;
 	background-color: grey;
+`;
+const ButtonContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	margin: 0;
 `;
 const Button = styled.button<{ width?: number }>`
 	width: ${(props) => (props.width ? props.width : 110)}px;
@@ -62,7 +69,7 @@ const NewsComponent = ({ name, description, picture, id, item }: INews) => {
 			<p>{name}</p>
 			<p>{description}</p>
 			{user?.role === 'admin' && (
-				<>
+				<ButtonContainer>
 					<Button onClick={toggleNewsAddModal}>Добавить</Button>
 					<Button onClick={toggleNewsEditModal}>Изменить</Button>
 					<Button
@@ -79,7 +86,7 @@ const NewsComponent = ({ name, description, picture, id, item }: INews) => {
 					>
 						Удалить
 					</Button>
-				</>
+				</ButtonContainer>
 			)}
 			<Model isOpen={editNewsModal} onBackgroundClick={toggleNewsEditModal}>
 				<NewsModal status='edit' item={item} />

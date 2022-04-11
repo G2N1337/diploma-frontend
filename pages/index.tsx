@@ -32,11 +32,10 @@ const PhotoBackground = styled.div`
 	background: #e6e1e1;
 `;
 const NewsContainer = styled.div`
-	display: flex;
-	width: 100%;
-	gap: 45px;
-	text-align: center;
-	justify-content: center;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1em;
+	justify-items: center;
 `;
 const Button = styled.button`
 	border-radius: 4px;
