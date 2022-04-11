@@ -211,7 +211,7 @@ const HeaderComponent = () => {
 								push('/manager');
 							}}
 						>
-							Меню менеджера
+							Менеджер
 						</Button>
 					)}
 					<Button>Акции</Button>
