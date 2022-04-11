@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useMutation, useQuery } from 'react-query';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { UserContext } from '../../context';
 import { toast, ToastContainer } from 'react-toastify';
@@ -10,6 +10,7 @@ import Modal from 'styled-react-modal';
 import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../../components/chat-component/chat.component';
+import InputMask from 'react-input-mask';
 
 interface IWHData {
 	width?: number;
@@ -166,6 +167,16 @@ const Input = styled.input<IWHData>`
 	height: ${(props) => (props.height ? props.height : 5)}%;
 	width: ${(props) => props.width}%;
 `;
+const InputMaske = styled(InputMask)<IWHData>`
+	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
+	border-radius: 4px;
+	padding: 0.6rem 1.5rem;
+	border: 0.3px dotted gray;
+	background-color: white;
+	margin-bottom: 15px;
+	height: ${(props) => (props.height ? props.height : 5)}%;
+	width: ${(props) => props.width}%;
+`;
 const BigInput = styled.textarea<{ height: number; width: number }>`
 	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
 	border-radius: 4px;
@@ -214,11 +225,16 @@ const Menu: React.FC = () => {
 	const router = useRouter();
 	const { id } = router.query;
 	const [openModal, setOpenModal] = useState(false);
-
+	const [openPaymentModal, setOpenPaymentModal] = useState(false);
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [name, setName] = useState(user?.fullName);
 	const [menu, setMenu] = useState<any[]>([]);
+	const [cardNumber, setCardNumber] = useState('');
+	const [date, setDate] = useState('');
+	const [cvv, setCvv] = useState('');
+	const [cardName, setCardName] = useState('');
+	const [success, setSuccess] = useState(false);
 
 	//Заказ
 	const [order, setOrder] = useState<IOrderItem[]>([]);
@@ -226,7 +242,37 @@ const Menu: React.FC = () => {
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
-
+	const togglePaymentModal = (e: React.SyntheticEvent) => {
+		setOpenPaymentModal(!openPaymentModal);
+	};
+	const submitHandler = (e: React.SyntheticEvent) => {
+		e.preventDefault();
+		if (
+			cardNumber.replace(/\D/g, '').length === 16 &&
+			cvv.replace(/\D/g, '').length === 3 &&
+			date.replace(/\D/g, '').length === 4 &&
+			cardName.length > 2
+		) {
+			console.log({
+				cardNumber,
+				cvv,
+				date,
+				cardName,
+			});
+			axios.put(
+				`http://localhost:5000/order-ent/payment/${id}`,
+				{
+					status: true,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				}
+			);
+			setSuccess(true);
+		}
+	};
 	useQuery(
 		'menu-idk',
 		async () => {
@@ -248,6 +294,67 @@ const Menu: React.FC = () => {
 	return (
 		<Page>
 			<h1>{order?.name}</h1>
+			{order?.status === 'accepted' && order?.paymentStatus === false && (
+				<Button style={{ backgroundColor: 'grey' }} onClick={togglePaymentModal}>
+					Оплатить
+				</Button>
+			)}
+			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
+			<Model isOpen={openPaymentModal} onBackgroundClick={togglePaymentModal}>
+				<Form onSubmit={(e) => submitHandler(e)}>
+					{!success ? (
+						<>
+							<h1>Введите данные вашей карты</h1>
+							<InputMaske
+								placeholder='Номер карты'
+								mask={'9999-9999-9999-9999'}
+								value={cardNumber}
+								style={{ width: '70%' }}
+								onChange={(e) => {
+									setCardNumber(e.target.value);
+									console.log(e.target.value.replace(/\D/g, ''));
+								}}
+							/>
+							<InputMaske
+								placeholder='CVV'
+								mask={'999'}
+								value={cvv}
+								style={{ width: '70%' }}
+								onChange={(e) => {
+									setCvv(e.target.value);
+								}}
+							/>
+							<InputMaske
+								placeholder='Дата окончания'
+								style={{ width: '70%' }}
+								mask={'99/99'}
+								value={date}
+								onChange={(e) => {
+									setDate(e.target.value);
+								}}
+							/>
+							<Input
+								placeholder='Имя владельца'
+								style={{ width: '70%' }}
+								value={cardName}
+								onChange={(e) => {
+									setCardName(e.target.value.replace(/\d/g, ''));
+								}}
+							/>
+							<Button
+								type='submit'
+								style={{ backgroundColor: 'black', color: 'white', width: '50%' }}
+							>
+								Подтвердить
+							</Button>
+						</>
+					) : (
+						<>
+							<h2>Ваш заказ был успешно оплачен ✅</h2>
+						</>
+					)}
+				</Form>
+			</Model>
 			<h2>Состав заказа:</h2>
 			<EntertainmentContainer>
 				<EntertainmentList>

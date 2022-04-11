@@ -20,8 +20,33 @@ const Form = styled.form`
 		width: 70%;
 		border-bottom: 1px dotted black;
 	}
+	h2 {
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+	}
 `;
+interface IWHData {
+	width?: number;
+	height?: number;
+}
+const Button = styled.button<IWHData>`
+	width: ${(props) => (props.width ? props.width : 110)}px;
+	border-radius: 4px;
+	height: 38px;
+	border: none;
+	background: #fff;
+	font-weight: 600;
+	margin-top: 15px;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	margin-left: 25px;
+	margin-right: 25px;
 
+	&:hover {
+		cursor: pointer;
+	}
+`;
 const EntertainmentList = styled.div`
 	display: flex;
 	flex-direction: row;
@@ -69,9 +94,12 @@ const OrderModModal = ({ id }) => {
 		<Form>
 			<p>{order?.name}</p>
 			<p>{status}</p>
+			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
 			<div>
-				<h3>Изменить статус заказа</h3>
-				<button
+				<h2>Изменить статус заказа</h2>
+
+				<Button
+					style={{ backgroundColor: 'lime', color: 'white' }}
 					onClick={(e) => {
 						axios.put(
 							`http://localhost:5000/order-ent/mod/${id}`,
@@ -87,8 +115,9 @@ const OrderModModal = ({ id }) => {
 					}}
 				>
 					Принять
-				</button>
-				<button
+				</Button>
+				<Button
+					style={{ backgroundColor: 'red', color: 'white' }}
 					onClick={(e) => {
 						axios.put(
 							`http://localhost:5000/order-ent/mod/${id}`,
@@ -104,7 +133,7 @@ const OrderModModal = ({ id }) => {
 					}}
 				>
 					Отменить
-				</button>
+				</Button>
 			</div>
 			<EntertainmentContainer>
 				<EntertainmentList>

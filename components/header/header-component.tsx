@@ -205,16 +205,15 @@ const HeaderComponent = () => {
 					/>
 				</FunContainer>
 				<ContactContainer>
-					{user?.role === 'admin' ||
-						(user?.role === 'manager' && (
-							<Button
-								onClick={() => {
-									push('/manager');
-								}}
-							>
-								Меню менеджера
-							</Button>
-						))}
+					{user?.login && user?.role !== 'user' && (
+						<Button
+							onClick={() => {
+								push('/manager');
+							}}
+						>
+							Меню менеджера
+						</Button>
+					)}
 					<Button>Акции</Button>
 					<Button
 						onClick={() => {
