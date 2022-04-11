@@ -317,10 +317,12 @@ const Menu: React.FC = () => {
 							onChange={(e: any) => {
 								// console.log(e);
 								setMenuField(e.label);
-								axios.get(`http://localhost:5000/menu/type/${e.value}`).then((data) => {
-									console.log(data.data.menu);
-									setMenu(data.data.menu);
-								});
+								axios
+									.get(`http://localhost:5000/menu/type/alt/${e.value}`)
+									.then((data) => {
+										console.log(data.data.menu);
+										setMenu(data.data);
+									});
 							}}
 						/>
 						<div>
