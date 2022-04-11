@@ -37,7 +37,7 @@ const ManagerPage = () => {
 	return (
 		<div>
 			{orders.map((item) => (
-				<OrderMod item={item} />
+				<OrderMod item={item} key={item._id} />
 			))}
 		</div>
 	);

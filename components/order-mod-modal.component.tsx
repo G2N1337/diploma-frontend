@@ -64,7 +64,7 @@ const OrderModModal = ({ id }) => {
 	const [order, setOrder] = useState();
 	const [status, setStatus] = useState('');
 	const { user, setUser } = useContext(UserContext);
-	useQuery(
+	const { isSuccess } = useQuery(
 		'menu-idk',
 		async () => {
 			return await axios.get(`http://localhost:5000/order-ent/mod/${id}`, {
@@ -167,7 +167,9 @@ const OrderModModal = ({ id }) => {
 				</EntertainmentList>
 			</EntertainmentContainer>
 			<h1>Сумма: {order?.price} руб</h1>
-			<ChatComponent manager={true} chat={order?.chat} user={user} />
+			{isSuccess && order?.chat !== undefined && (
+				<ChatComponent manager={true} chat={order?.chat} user={user} />
+			)}
 		</Form>
 	);
 };
