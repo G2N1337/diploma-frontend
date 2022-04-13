@@ -273,7 +273,7 @@ const Menu: React.FC = () => {
 			setSuccess(true);
 		}
 	};
-	useQuery(
+	const { isSuccess } = useQuery(
 		'menu-idk',
 		async () => {
 			return await axios.get(`http://localhost:5000/order-ent/${id}`, {
@@ -372,7 +372,13 @@ const Menu: React.FC = () => {
 					<div>
 						<h3>Развлечение:</h3>
 						<p>{order?.entertainment?.name}</p>
-						<p>{order?.entertainment?.entName}</p>
+						<div>
+							{order?.entertainment?.entertainments.map((item) => (
+								<p>
+									{item.name}, Количество часов: {item.time}
+								</p>
+							))}
+						</div>
 						<p>{order?.entertainment?.price} руб</p>
 					</div>
 					<div>
@@ -388,7 +394,9 @@ const Menu: React.FC = () => {
 				</EntertainmentList>
 			</EntertainmentContainer>
 			<h1>Сумма: {order?.price} руб</h1>
-			<ChatComponent user={user} chat={order?.chat} manager={false} />
+			{isSuccess && order?.chat !== undefined && (
+				<ChatComponent user={user} chat={order?.chat} manager={false} />
+			)}
 			<ToastContainer position='bottom-left' theme='dark' />
 		</Page>
 	);

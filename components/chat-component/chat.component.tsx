@@ -114,7 +114,7 @@ const ChatComponent = ({ chat, user, manager }) => {
 			);
 		},
 		{
-			refetchInterval: 1000,
+			refetchInterval: 2500,
 			refetchOnWindowFocus: 'always',
 			onSuccess: (e) => {
 				setMessages(e.data.messages);

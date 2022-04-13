@@ -79,7 +79,7 @@ const Home: NextPage = () => {
 			</PhotoBackground>
 			<Span>Новости и акции</Span>
 			<NewsContainer>
-				{news.map((item, i) => (
+				{news.slice(0, 5).map((item, i) => (
 					<NewsComponent
 						key={`news-component-${i}`}
 						name={item?.name}
@@ -91,6 +91,7 @@ const Home: NextPage = () => {
 				))}
 				<ToastContainer position='bottom-left' theme='dark' />
 			</NewsContainer>
+			<Span>Показаны последние 5 новостей</Span>
 		</Page>
 	);
 };

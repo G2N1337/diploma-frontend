@@ -214,7 +214,13 @@ const HeaderComponent = () => {
 							Менеджер
 						</Button>
 					)}
-					<Button>Акции</Button>
+					<Button
+						onClick={() => {
+							push('/news');
+						}}
+					>
+						Акции
+					</Button>
 					<Button
 						onClick={() => {
 							push('/contacts');

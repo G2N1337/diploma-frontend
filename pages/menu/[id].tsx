@@ -25,7 +25,7 @@ interface IMenu {
 	description: string;
 }
 
-export interface IOrderItem {
+interface IOrderItem {
 	menu: string;
 	count: number;
 }

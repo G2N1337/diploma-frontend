@@ -151,7 +151,13 @@ const OrderModModal = ({ id }) => {
 					<div>
 						<h3>Развлечение:</h3>
 						<p>{order?.entertainment?.name}</p>
-						<p>{order?.entertainment?.entName}</p>
+						<div>
+							{order?.entertainment?.entertainments.map((item) => (
+								<p>
+									{item.name}, Количество часов: {item.time}
+								</p>
+							))}
+						</div>
 						<p>{order?.entertainment?.price} руб</p>
 					</div>
 					<div>
