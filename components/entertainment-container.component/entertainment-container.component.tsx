@@ -5,19 +5,17 @@ import { toast } from 'react-toastify';
 
 const EntertainmentBlock = styled.div`
 	display: flex;
-	gap: 5px;
-	max-height: 10%;
+	gap: 10px;
+	min-height: 2em;
 	min-width: 100%;
 	justify-content: space-between;
 	align-items: stretch;
 	margin-bottom: 10px;
 	input {
-		max-height: 100%;
 		max-width: 7%;
 	}
 `;
 const Button = styled.button`
-	max-height: 100%;
 	min-width: 25%;
 	border: none;
 	background-color: black;
@@ -26,6 +24,7 @@ const Button = styled.button`
 	cursor: pointer;
 `;
 const Paragraph = styled.p`
+	margin: 0;
 	width: 100%;
 `;
 interface IOrderItem {

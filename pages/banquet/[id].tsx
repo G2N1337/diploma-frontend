@@ -15,6 +15,7 @@ interface IBanquet {
 	description: string;
 	banquet: any;
 	price: number;
+	image: string;
 }
 interface IProgram {
 	name: string;
@@ -27,6 +28,11 @@ const Page = styled.div`
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+`;
+const Image = styled.img`
+	height: 15em;
+	width: 15em;
+	background-color: grey;
 `;
 const Button = styled.button<{ width?: number }>`
 	width: ${(props) => (props.width ? props.width : 110)}px;
@@ -71,9 +77,9 @@ const Container = styled.div`
 	width: 100%;
 `;
 const InfoBox = styled.div`
-	background-color: #e6e1e1;
 	display: flex;
-	width: 97%;
+
+	max-width: 20em;
 	padding: 2em;
 	flex-direction: row;
 	gap: 3em;
@@ -81,8 +87,11 @@ const InfoBox = styled.div`
 const InfoContainer = styled.div`
 	margin: 40px 0 0 48px;
 	display: flex;
+	background-color: lightgrey;
 	flex-direction: row;
+	max-width: 80%;
 	gap: 10em;
+	overflow-x: scroll;
 `;
 const MegaContainer = styled.div`
 	margin: 40px 0 0 48px;
@@ -155,6 +164,7 @@ const Menu: React.FC = () => {
 			},
 		}
 	);
+
 	return (
 		<Page>
 			<ModalContent>
@@ -184,7 +194,7 @@ const Menu: React.FC = () => {
 										},
 									})
 									.then(() => {
-										router.push('/');
+										router.reload();
 									})
 							}
 						>
@@ -197,6 +207,7 @@ const Menu: React.FC = () => {
 					<Paragraph>{banquet?.description}</Paragraph>
 					<Paragraph>Цена: {banquet?.price}</Paragraph>
 				</MegaContainer>
+				<Image src={banquet?.image} />
 				<InfoContainer>
 					<InfoBox>
 						{!!program &&

@@ -11,32 +11,37 @@ const Paragraph = styled.p`
 `;
 const InfoBox = styled.div`
 	background-color: #e6e1e1;
-	width: 30em;
-	height: 24em;
-	padding: 50px;
+	min-width: 30em;
+	min-height: 24em;
+	padding: 2.5em;
 `;
 const Button = styled.button<{ width?: number }>`
-	width: ${(props) => (props.width ? props.width : 110)}px;
-	border-radius: 4px;
-	height: 38px;
+	width: ${(props) => (props.width ? props.width : 7.5)}em;
+	border-radius: 0.25em;
+	height: 3em;
 	border: none;
 	background: #fff;
 	font-weight: 600;
-	margin-top: 15px;
+	margin-top: 1em;
 	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
 		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-	margin-left: 25px;
-	margin-right: 25px;
+	margin-left: 2.3em;
+	margin-right: 2.3em;
 
 	&:hover {
 		cursor: pointer;
 	}
 `;
 export const Model = Modal.styled`
-    width: 30%;	
-    height: 70%;
+    width: 40%;	
+    height: 100%;
     background-color: white;
     border-radius: 15px;
+`;
+const Image = styled.img`
+	height: 15em;
+	width: 15em;
+	background-color: grey;
 `;
 
 const MenuContainer = ({ item }) => {
@@ -73,6 +78,7 @@ const MenuContainer = ({ item }) => {
 	};
 	return (
 		<InfoBox key={item._id}>
+			<Image src={item?.image} />
 			<Paragraph>{item.name}</Paragraph>
 			<Paragraph>{item.price} рублей</Paragraph>
 			<Paragraph>Цена за {item.count}</Paragraph>
@@ -89,7 +95,7 @@ const MenuContainer = ({ item }) => {
 									Authorization: `Bearer ${sessionStorage.getItem('token')}`,
 								},
 							});
-							router.push('/');
+							router.reload();
 						}}
 					>
 						Удалить

@@ -11,7 +11,6 @@ import BanquetModal from '../components/modal/banquet-modal.component';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../components/chat-component/chat.component';
-
 const Form = styled.div`
 	min-height: 150px;
 	width: 200px;
@@ -56,22 +55,29 @@ const Span = styled.span`
 	display: flex;
 	margin: 2em 0em 2em 0em;
 `;
+
 const Home: NextPage = () => {
 	const [news, setNews] = useState([]);
-	const { user, setUser } = useContext(UserContext);
 	useQuery(
 		'get-news',
 		async () => {
 			return await axios.get(`http://localhost:5000/news`);
 		},
 		{
-			refetchInterval: 1000,
+			refetchInterval: 3000,
 			onSuccess: (e) => {
 				setNews(e.data.reverse());
 			},
 		}
 	);
 
+	const toBase64 = (file: Blob) =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
 	return (
 		<Page>
 			<PhotoBackground>

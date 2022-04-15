@@ -65,7 +65,18 @@ const Button = styled.button`
 	cursor: pointer;
 	border: none;
 `;
-const ChatComponent = ({ chat, user, manager }) => {
+interface IUser {
+	fullName: string;
+}
+const ChatComponent = ({
+	chat,
+	user,
+	manager,
+}: {
+	chat: string;
+	user: IUser;
+	manager: string;
+}) => {
 	const [messages, setMessages] = useState([]);
 	const [content, setContent] = useState('');
 
@@ -162,7 +173,7 @@ const ChatComponent = ({ chat, user, manager }) => {
 				<Button
 					onClick={(e) => {
 						e.preventDefault();
-
+						//@ts-ignore
 						mutation.mutate({
 							id: chat,
 							content: content,

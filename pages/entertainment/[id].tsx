@@ -12,6 +12,7 @@ import Modal from 'styled-react-modal';
 import Select from 'react-select';
 import { imageOptimizer } from 'next/dist/server/image-optimizer';
 import EntertainmentContainer from '../../components/entertainment-container.component/entertainment-container.component';
+import imageCompression from 'browser-image-compression';
 
 const Page = styled.div`
 	height: 100%;
@@ -112,9 +113,9 @@ const Container = styled.div`
 `;
 const InfoBox = styled.div`
 	background-color: #e6e1e1;
-	width: 30em;
-	height: 15em;
-	padding: 50px;
+	min-width: 30em;
+	min-height: 15em;
+	padding: 5em;
 `;
 const InfoContainer = styled.div`
 	margin: 40px 0 0 48px;
@@ -187,23 +188,32 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
+const EntertainmentList = styled.div`
+	overflow-y: scroll;
+	max-height: 25em;
+	margin-bottom: 2em;
+`;
 const Entertainment: React.FC = () => {
 	interface IEntertainment {
 		name: string;
-		price: string | number;
+		price: number;
 		workTime: string;
 		description: string;
 		_id: string;
 		image: string;
 	}
+	type TEntertainment = IEntertainment[];
+
 	interface IEntertainmentList {
 		_id: string;
 		name: string;
 	}
-	interface IOrderItem {
-		value: string;
-		time: number;
-	}
+
+	const Image = styled.img`
+		height: 15em;
+		width: 15em;
+		background-color: grey;
+	`;
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [entertainmentsList, setEntertainmentsList] = useState([]);
@@ -218,13 +228,13 @@ const Entertainment: React.FC = () => {
 	const [time, setTime] = useState('');
 	const [date, setDate] = useState('');
 	const [entertainments, setEntertainments] = useState<IEntertainment>();
-	const [entArr, setEntArr] = useState<IEntertainment>();
+	const [entArr, setEntArr] = useState<TEntertainment>();
 	// admin
 	const [name, setName] = useState(entertainments?.name);
 	const [price, setPrice] = useState(entertainments?.price);
 	const [descriptionA, setDescriptionA] = useState(entertainments?.description);
 	const [workTime, setWorkTime] = useState(entertainments?.workTime);
-	const [image, setImage] = useState(entertainments?.image);
+	const [image, setImage] = useState<File>();
 
 	const router = useRouter();
 	const { id } = router.query;
@@ -252,6 +262,7 @@ const Entertainment: React.FC = () => {
 		{
 			onSuccess: (e) => {
 				setEntArr(e.data);
+				console.log(e.data);
 				setEntertainmentsList(
 					e.data?.map((item: IEntertainmentList) => ({
 						value: item?._id,
@@ -273,7 +284,6 @@ const Entertainment: React.FC = () => {
 	};
 	const mutation = useMutation(
 		async () => {
-			console.log('xuy');
 			return await axios.post(
 				`http://localhost:5000/entorder`,
 				{
@@ -323,8 +333,8 @@ const Entertainment: React.FC = () => {
 		{
 			onSuccess: (e) => {
 				toast.success(`Успешно добавлено!`);
+				router.reload();
 				console.log(e);
-				router.push('/');
 			},
 		}
 	);
@@ -351,7 +361,7 @@ const Entertainment: React.FC = () => {
 			onSuccess: (e) => {
 				toast.success(`Успешно изменено`);
 				console.log(e);
-				router.push('/');
+				router.reload();
 			},
 		}
 	);
@@ -409,7 +419,39 @@ const Entertainment: React.FC = () => {
 			toast.error('Укажите дату!');
 		}
 	};
+	const toBase64 = (file: Blob): Promise<File> =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader?.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result as unknown as File);
+			reader.onerror = (error) => reject(error);
+		});
+	const handleImageUpload = async (event: React.SyntheticEvent) => {
+		const input = event.target as HTMLInputElement;
 
+		const imageFile = input.files[0];
+		console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+		console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+		const options = {
+			maxSizeMB: 0.5,
+			maxWidthOrHeight: 240,
+			useWebWorker: true,
+		};
+		try {
+			const compressedFile = await imageCompression(imageFile, options);
+			console.log(
+				'compressedFile instanceof Blob',
+				compressedFile instanceof Blob
+			); // true
+			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+			setImage(await toBase64(compressedFile)); // write your own logic
+			console.log({ base64: await toBase64(compressedFile) });
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<Page>
 			<ModalContent>
@@ -440,7 +482,15 @@ const Entertainment: React.FC = () => {
 							}}
 							placeholder='Время работы'
 						/>
-						<Input width={75} placeholder='Картинка' />
+						<input
+							type='file'
+							width={75}
+							// value={picture}
+							accept='image/*'
+							onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+								handleImageUpload(e);
+							}}
+						/>
 
 						<BigInput
 							placeholder={'Описание'}
@@ -481,7 +531,15 @@ const Entertainment: React.FC = () => {
 							}}
 							placeholder='Время работы'
 						/>
-						<Input width={75} placeholder='Картинка' />
+						<input
+							type='file'
+							width={75}
+							// value={picture}
+							accept='image/*'
+							onChange={async (e) => {
+								handleImageUpload(e);
+							}}
+						/>
 
 						<BigInput
 							placeholder={'Описание'}
@@ -508,15 +566,16 @@ const Entertainment: React.FC = () => {
 								setDate(e.target.value);
 							}}
 						/>
-
-						{entArr?.map((item) => (
-							<EntertainmentContainer
-								key={item._id}
-								item={item}
-								orderList={order}
-								setOrderList={(items) => setOrder(items)}
-							/>
-						))}
+						<EntertainmentList>
+							{entArr?.map((item) => (
+								<EntertainmentContainer
+									key={item._id}
+									item={item}
+									orderList={order}
+									setOrderList={(items) => setOrder(items)}
+								/>
+							))}
+						</EntertainmentList>
 						<BigInput
 							value={description}
 							placeholder={'Описание'}
@@ -594,6 +653,7 @@ const Entertainment: React.FC = () => {
 				)}
 				<InfoContainer>
 					<InfoBox>
+						<Image src={entertainments?.image} />
 						<p>{entertainments?.name}</p>
 						<p>{entertainments?.price} рублей</p>
 						<p>{entertainments?.workTime}</p>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import imageCompression from 'browser-image-compression';
 import { toast } from 'react-toastify';
 export const ModalContent = styled.div`
 	display: flex;
@@ -160,6 +161,39 @@ const ModalBanquet = ({ item, status }) => {
 			});
 		}
 	};
+	const toBase64 = (file: Blob) =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader?.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
+	const handleImageUpload = async (event: Event) => {
+		const input = event.target as HTMLInputElement;
+
+		const imageFile = input.files[0];
+		console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+		console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+		const options = {
+			maxSizeMB: 0.5,
+			maxWidthOrHeight: 240,
+			useWebWorker: true,
+		};
+		try {
+			const compressedFile = await imageCompression(imageFile, options);
+			console.log(
+				'compressedFile instanceof Blob',
+				compressedFile instanceof Blob
+			); // true
+			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+			setImage(await toBase64(compressedFile)); // write your own logic
+			console.log({ base64: await toBase64(compressedFile) });
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<Form onSubmit={status === 'add' ? submitAdd : submitEdit}>
 			{status === 'add' ? (
@@ -181,12 +215,13 @@ const ModalBanquet = ({ item, status }) => {
 							setPrice(e.target.value);
 						}}
 					/>
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={image}
-						onChange={(e) => {
-							setImage(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e) => {
+							handleImageUpload(e);
 						}}
 					/>
 					<BigInput
@@ -218,14 +253,15 @@ const ModalBanquet = ({ item, status }) => {
 							setPrice(e.target.value);
 						}}
 					/>
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={image}
-						onChange={(e) => {
-							setImage(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e) => {
+							handleImageUpload(e);
 						}}
-					/>{' '}
+					/>
 					<BigInput
 						placeholder={'Описание'}
 						width={75}

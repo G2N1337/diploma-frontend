@@ -1,10 +1,11 @@
 import Modal from 'styled-react-modal';
 import styled from 'styled-components';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import imageCompression from 'browser-image-compression';
 export const ModalContent = styled.div`
 	display: flex;
 	align-items: flex-end;
@@ -80,6 +81,11 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
+const Image = styled.img`
+	height: 15em;
+	width: 15em;
+	background-color: grey;
+`;
 const NewsModal = ({ item, status }) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
@@ -154,6 +160,39 @@ const NewsModal = ({ item, status }) => {
 			});
 		}
 	};
+	const toBase64 = (file: Blob) =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader?.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
+	const handleImageUpload = async (event: Event) => {
+		const input = event.target as HTMLInputElement;
+
+		const imageFile = input.files[0];
+		console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+		console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+		const options = {
+			maxSizeMB: 0.5,
+			maxWidthOrHeight: 240,
+			useWebWorker: true,
+		};
+		try {
+			const compressedFile = await imageCompression(imageFile, options);
+			console.log(
+				'compressedFile instanceof Blob',
+				compressedFile instanceof Blob
+			); // true
+			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+			setPicture(await toBase64(compressedFile)); // write your own logic
+			console.log({ base64: await toBase64(compressedFile) });
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<Form onSubmit={status === 'add' ? submitAdd : submitEdit}>
 			{status === 'add' ? (
@@ -168,12 +207,13 @@ const NewsModal = ({ item, status }) => {
 						}}
 					/>
 
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={picture}
-						onChange={(e) => {
-							setPicture(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e) => {
+							handleImageUpload(e);
 						}}
 					/>
 					<BigInput
@@ -189,6 +229,8 @@ const NewsModal = ({ item, status }) => {
 			) : (
 				<>
 					<h1>Редактирование {item?.name}</h1>
+					<Image src={picture} />
+
 					<Input
 						placeholder='Название'
 						width={75}
@@ -197,14 +239,15 @@ const NewsModal = ({ item, status }) => {
 							setName(e.target.value);
 						}}
 					/>
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={picture}
-						onChange={(e) => {
-							setPicture(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e) => {
+							handleImageUpload(e);
 						}}
-					/>{' '}
+					/>
 					<BigInput
 						placeholder={'Описание'}
 						width={75}

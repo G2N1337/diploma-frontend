@@ -19,9 +19,9 @@ interface IWHData {
 
 interface IMenu {
 	name: string;
-	price: string;
-	count: string;
-	menu: any;
+	price: number;
+	count: number;
+	menuType: string;
 	description: string;
 }
 
@@ -38,7 +38,7 @@ const Page = styled.div`
 const ButtonSubmit = styled.button<IWHData>`
 	width: ${(props) => (props.width ? props.width : 110)}px;
 	border-radius: 4px;
-	height: 38px;
+	height: 5em;
 	border: none;
 	background: #c1c1c4;
 	color: white;
@@ -95,6 +95,8 @@ const Container = styled.div`
 	background-color: #c4c4c4;
 	height: 100%;
 	width: 100%;
+	display: flex;
+	justify-content: center;
 `;
 const InfoBox = styled.div`
 	background-color: #e6e1e1;
@@ -103,10 +105,13 @@ const InfoBox = styled.div`
 	padding: 50px;
 `;
 const InfoContainer = styled.div`
-	margin: 40px 0 0 48px;
-	display: flex;
-	flex-direction: row;
-	gap: 10em;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	width: 70%;
+	grid-gap: 0.3em;
+	margin: 0 auto;
+	margin-top: 1em;
+	justify-items: center;
 `;
 const Paragraph = styled.p`
 	border-bottom: 1px dotted #c1c1c1;
@@ -118,7 +123,7 @@ const ModalContent = styled.div`
 `;
 const Model = Modal.styled`
 width: 30%;	
-height: 70%;
+height: 100%;
 background-color: white;
 border-radius: 15px;
 `;
@@ -185,8 +190,7 @@ const Form = styled.form`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	overflow: none;
-	height: 100%;
+	height: 95%;
 	h1 {
 		display: flex;
 		padding-bottom: 5px;
@@ -196,7 +200,12 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
-
+const FoodList = styled.div`
+	overflow-y: scroll;
+	max-height: 25em;
+	margin-bottom: 2em;
+	margin-top: 2em;
+`;
 const Menu: React.FC = () => {
 	const router = useRouter();
 	const { id } = router.query;
@@ -268,11 +277,24 @@ const Menu: React.FC = () => {
 	useQuery(
 		'menu-types',
 		async () => {
+			return await axios.get(`http://localhost:5000/menu/type/${id}`);
+		},
+		{
+			onSuccess: (e) => {
+				console.log(e.data);
+				setMenuTypes(e.data);
+			},
+		}
+	);
+	useQuery(
+		'menu',
+		async () => {
 			return await axios.get(`http://localhost:5000/menu/type/alt/${id}`);
 		},
 		{
 			onSuccess: (e) => {
-				setMenuTypes(e.data);
+				console.log(e.data);
+				setMenu(e.data);
 			},
 		}
 	);
@@ -291,14 +313,6 @@ const Menu: React.FC = () => {
 				<Model isOpen={openModal} onBackgroundClick={toggleModal}>
 					<Form onSubmit={(e) => submit(e)}>
 						<h1>Заказать еду</h1>
-						<Input
-							value={name}
-							placeholder={'Имя'}
-							width={75}
-							onChange={(e) => {
-								setName(e.target.value);
-							}}
-						/>
 
 						<Input
 							type='date'
@@ -335,27 +349,29 @@ const Menu: React.FC = () => {
 								}}
 							></input>
 						</div>
-						{menu?.length > 0 ? (
-							menu?.map(
-								(item: {
-									_id: string;
-									name: string;
-									description: string;
-									price: number;
-								}) => (
-									<FoodContainer
-										key={item._id}
-										item={item}
-										orderList={order}
-										setOrderList={(items: IOrderItem[]) => {
-											setOrder(items);
-										}}
-									></FoodContainer>
+						<FoodList>
+							{menu?.length > 0 ? (
+								menu?.map(
+									(item: {
+										_id: string;
+										name: string;
+										description: string;
+										price: number;
+									}) => (
+										<FoodContainer
+											key={item._id}
+											item={item}
+											orderList={order}
+											setOrderList={(items: IOrderItem[]) => {
+												setOrder(items);
+											}}
+										></FoodContainer>
+									)
 								)
-							)
-						) : (
-							<Paragraph>Выберите меню</Paragraph>
-						)}
+							) : (
+								<Paragraph>Выберите меню</Paragraph>
+							)}
+						</FoodList>
 						<ButtonSubmit
 							width={300}
 							onClick={() => {
@@ -373,21 +389,21 @@ const Menu: React.FC = () => {
 			</ModalContent>
 			<Headline>{menuTypes?.name && <h1>{menuTypes?.name}</h1>}</Headline>
 			<Container>
+				<Button
+					width={300}
+					onClick={() => {
+						if (!user?.login) {
+							toast.error('Нужно войти в учетную запись для создания заказа');
+						} else {
+							setOpenModal(true);
+						}
+					}}
+				>
+					Заказать
+				</Button>
 				<InfoContainer>
-					{!!menuTypes &&
-						menuTypes?.map((item: any) => <MenuContainer item={item} />)}
-					<Button
-						width={300}
-						onClick={() => {
-							if (!user?.login) {
-								toast.error('Нужно войти в учетную запись для создания заказа');
-							} else {
-								setOpenModal(true);
-							}
-						}}
-					>
-						Заказать
-					</Button>
+					{!!menu &&
+						menu?.map((item) => <MenuContainer item={item} key={item._id} />)}
 				</InfoContainer>
 			</Container>
 			<ToastContainer position='bottom-left' theme='dark' />

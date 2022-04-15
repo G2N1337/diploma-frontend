@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import Modal from 'styled-react-modal';
 import { UserContext } from '../../context';
 import NewsModal from '../forms/news.modal.component';
+// import Image from 'next/image';
+
 interface INews {
 	name: string;
 	description: string;
@@ -19,8 +21,8 @@ const MainContainter = styled.div`
 	min-width: 300px;
 `;
 const Image = styled.img`
-	min-height: 94px;
-	min-width: 135px;
+	height: 15em;
+	width: 15em;
 	background-color: grey;
 `;
 const ButtonContainer = styled.div`
@@ -65,7 +67,7 @@ const NewsComponent = ({ name, description, picture, id, item }: INews) => {
 	};
 	return (
 		<MainContainter>
-			<Image src={`https://via.placeholder.com/300x300?text=${picture}`} />
+			<Image src={picture} />
 			<p>{name}</p>
 			<p>{description}</p>
 			{user?.role === 'admin' && (

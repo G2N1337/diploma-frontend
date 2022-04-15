@@ -6,14 +6,16 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import imageCompression from 'browser-image-compression';
+
 export const ModalContent = styled.div`
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
 `;
 export const Model = Modal.styled`
-    width: 30%;	
-    height: 70%;
+    width: 50%;	
+    height: 100%;
     background-color: white;
     border-radius: 15px;
 `;
@@ -107,6 +109,11 @@ const Selector = styled(Select)`
 		display: none;
 	}
 `;
+const Image = styled.img`
+	height: 15em;
+	width: 15em;
+	background-color: grey;
+`;
 const MenuItem = ({ item, status, menuList }) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
@@ -115,10 +122,6 @@ const MenuItem = ({ item, status, menuList }) => {
 	const [image, setImage] = useState(item?.image);
 	const [menu, setMenu] = useState(item?.menuType);
 	const id = item?._id;
-	interface IEntertainment {
-		_id: string;
-		name: string;
-	}
 
 	const mutationEdit = useMutation(
 		async () => {
@@ -201,7 +204,39 @@ const MenuItem = ({ item, status, menuList }) => {
 			});
 		}
 	};
+	const toBase64 = (file: Blob): Promise<File> =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader?.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result as unknown as File);
+			reader.onerror = (error) => reject(error);
+		});
+	const handleImageUpload = async (event: React.SyntheticEvent) => {
+		const input = event.target as HTMLInputElement;
 
+		const imageFile = input.files[0];
+		console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+		console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+		const options = {
+			maxSizeMB: 0.5,
+			maxWidthOrHeight: 240,
+			useWebWorker: true,
+		};
+		try {
+			const compressedFile = await imageCompression(imageFile, options);
+			console.log(
+				'compressedFile instanceof Blob',
+				compressedFile instanceof Blob
+			); // true
+			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+			setImage(await toBase64(compressedFile)); // write your own logic
+			console.log({ base64: await toBase64(compressedFile) });
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<Form onSubmit={status === 'add' ? submitAdd : submitEdit}>
 			{status === 'add' ? (
@@ -237,12 +272,13 @@ const MenuItem = ({ item, status, menuList }) => {
 							console.log(e.value);
 						}}
 					/>
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={image}
-						onChange={(e) => {
-							setImage(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+							handleImageUpload(e);
 						}}
 					/>
 					<BigInput
@@ -258,6 +294,7 @@ const MenuItem = ({ item, status, menuList }) => {
 			) : (
 				<>
 					<h1>Редактирование {item?.name}</h1>
+					<Image src={image} />
 					<Input
 						placeholder='Имя'
 						width={75}
@@ -274,12 +311,13 @@ const MenuItem = ({ item, status, menuList }) => {
 							setPrice(e.target.value);
 						}}
 					/>
-					<Input
-						placeholder='Картинка'
+					<input
+						type='file'
 						width={75}
-						value={image}
-						onChange={(e) => {
-							setImage(e.target.value);
+						// value={picture}
+						accept='image/*'
+						onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+							handleImageUpload(e);
 						}}
 					/>
 					<Selector

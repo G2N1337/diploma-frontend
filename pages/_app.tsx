@@ -6,6 +6,7 @@ import { UserContext } from '../context';
 import { ModalProvider } from 'styled-react-modal';
 
 import Page from '../components/page/page-component';
+import Head from 'next/head';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const queryClient = new QueryClient();
@@ -27,6 +28,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 	}, []);
 	return (
 		<>
+			<Head>
+				<title>Заказать праздник, еду, развлечения</title>
+			</Head>
 			<QueryClientProvider client={queryClient}>
 				<UserContext.Provider value={{ user, setUser }}>
 					<ModalProvider>

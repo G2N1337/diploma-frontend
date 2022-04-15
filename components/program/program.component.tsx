@@ -14,10 +14,13 @@ height: 70%;
 background-color: white;
 border-radius: 15px;
 `;
+const ProgramContainer = styled.div`
+	min-width: 25em;
+`;
 const Button = styled.button<{ width?: number }>`
 	width: ${(props) => (props.width ? props.width : 110)}px;
 	border-radius: 4px;
-	height: 38px;
+	height: 2.3em;
 	border: none;
 	background: #fff;
 	font-weight: 600;
@@ -45,7 +48,7 @@ const ProgramComponent = ({ item }) => {
 		setEditProgramModal(!editProgramModal);
 	};
 	return (
-		<div key={item._id}>
+		<ProgramContainer key={item._id}>
 			<Paragraph>Анимационная программа: </Paragraph>
 			<Paragraph>{item?.name}</Paragraph>
 			<Paragraph>{item?.description}</Paragraph>
@@ -78,7 +81,7 @@ const ProgramComponent = ({ item }) => {
 			<Model isOpen={addProgramModal} onBackgroundClick={toggleProgramAddModal}>
 				<ModalProgram status='add' item={item} />
 			</Model>
-		</div>
+		</ProgramContainer>
 	);
 };
 

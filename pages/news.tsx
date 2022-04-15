@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import NewsComponent from '../components/news/news-component';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Page = styled.div`
 	height: 100%;
@@ -24,7 +25,6 @@ const NewsPage = () => {
 			return await axios.get(`http://localhost:5000/news`);
 		},
 		{
-			refetchInterval: 1000,
 			onSuccess: (e) => {
 				setNews(e.data.reverse());
 			},
