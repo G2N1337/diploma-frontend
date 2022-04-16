@@ -9,10 +9,10 @@ const Paragraph = styled.p`
 	border-bottom: 1px dotted #c1c1c1;
 `;
 export const Model = Modal.styled`
-width: 30%;	
-height: 70%;
-background-color: white;
-border-radius: 15px;
+	width: 30%;	
+	height: 70%;
+	background-color: white;
+	border-radius: 15px;
 `;
 const ProgramContainer = styled.div`
 	min-width: 25em;
@@ -34,12 +34,19 @@ const Button = styled.button<{ width?: number }>`
 		cursor: pointer;
 	}
 `;
-
+interface IItem {
+	_id: string;
+	name: string;
+	description: string;
+	price: number;
+}
+//@ts-ignore
 const ProgramComponent = ({ item }) => {
 	const [addProgramModal, setAddProgramModal] = useState(false);
 	const [editProgramModal, setEditProgramModal] = useState(false);
 
 	const router = useRouter();
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const toggleProgramAddModal = () => {
 		setAddProgramModal(!addProgramModal);

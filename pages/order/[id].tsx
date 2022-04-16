@@ -237,7 +237,7 @@ const Menu: React.FC = () => {
 	const [success, setSuccess] = useState(false);
 
 	//Заказ
-	const [order, setOrder] = useState<IOrderItem[]>([]);
+	const [order, setOrder] = useState<IOrder>();
 
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
@@ -290,7 +290,47 @@ const Menu: React.FC = () => {
 			},
 		}
 	);
-
+	interface IOrder {
+		name: string;
+		status: string;
+		paymentStatus: boolean;
+		workTime: string;
+		price: number;
+		chat: string;
+		menu: IMenuItem;
+		entertainment: IEntertainmentOrder;
+		food: IMenu[];
+		program: IProgram;
+		banquettype: IBanquetType;
+	}
+	interface IEntertainmentOrder {
+		price: number;
+		name: string;
+		entertainments: IEntertainmentItem[];
+	}
+	interface IEntertainmentItem {
+		name: string;
+		price: number;
+		time: number;
+	}
+	interface IMenuItem {
+		name: string;
+		price: number;
+		count: number;
+	}
+	interface IBanquetType {
+		price: number;
+		name: string;
+	}
+	interface IProgram {
+		price: number;
+		name: string;
+	}
+	interface IMenu {
+		_id: string;
+		count: number;
+		name: string;
+	}
 	return (
 		<Page>
 			<h1>{order?.name}</h1>
@@ -355,14 +395,15 @@ const Menu: React.FC = () => {
 					)}
 				</Form>
 			</Model>
+			<p>Дата: {order?.workTime}</p>
+
 			<h2>Состав заказа:</h2>
 			<EntertainmentContainer>
 				<EntertainmentList>
 					<div>
 						<h3>Меню:</h3>
-						<p>{order?.food?.name}</p>
 						{order?.food?.map((item) => (
-							<div>
+							<div key={item._id}>
 								<p>{item?.count}</p>
 								<p>{item?.name}</p>
 							</div>

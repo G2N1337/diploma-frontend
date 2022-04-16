@@ -12,6 +12,7 @@ import OrderMod from '../components/order-mod.component';
 
 const ManagerPage = () => {
 	const router = useRouter();
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [orders, setOrders] = useState([]);
 	useQuery(

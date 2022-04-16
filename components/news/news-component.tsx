@@ -7,13 +7,19 @@ import Modal from 'styled-react-modal';
 import { UserContext } from '../../context';
 import NewsModal from '../forms/news.modal.component';
 // import Image from 'next/image';
-
+interface IItem {
+	name: string;
+	price: number;
+	description: string;
+	picture: string;
+	_id: string;
+}
 interface INews {
 	name: string;
 	description: string;
 	picture: string;
 	id: string;
-	item: object;
+	item: IItem;
 }
 const MainContainter = styled.div`
 	min-height: 300px;
@@ -56,6 +62,7 @@ export const Model = Modal.styled`
 `;
 const NewsComponent = ({ name, description, picture, id, item }: INews) => {
 	const router = useRouter();
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [addNewsModal, setAddNewsModal] = useState(false);
 	const [editNewsModal, setEditNewsModal] = useState(false);

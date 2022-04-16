@@ -81,7 +81,17 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
-const ModalBanquet = ({ item, status }) => {
+interface IItem {
+	name: string;
+	price: number;
+	description: string;
+	image: string;
+}
+interface IModalBanquet {
+	item: IItem;
+	status: string;
+}
+const ModalBanquet = ({ item, status }: IModalBanquet) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
 	const [price, setPrice] = useState(item?.price);
@@ -187,7 +197,7 @@ const ModalBanquet = ({ item, status }) => {
 				compressedFile instanceof Blob
 			); // true
 			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-
+			//@ts-ignore
 			setImage(await toBase64(compressedFile)); // write your own logic
 			console.log({ base64: await toBase64(compressedFile) });
 		} catch (error) {
@@ -221,6 +231,8 @@ const ModalBanquet = ({ item, status }) => {
 						// value={picture}
 						accept='image/*'
 						onChange={async (e) => {
+							//@ts-ignore
+
 							handleImageUpload(e);
 						}}
 					/>
@@ -259,6 +271,7 @@ const ModalBanquet = ({ item, status }) => {
 						// value={picture}
 						accept='image/*'
 						onChange={async (e) => {
+							//@ts-ignore
 							handleImageUpload(e);
 						}}
 					/>

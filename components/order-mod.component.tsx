@@ -8,7 +8,15 @@ export const Model = Modal.styled`
     border-radius: 15px;
     overflow-y: scroll;
 `;
-const OrderMod = ({ item }) => {
+interface IOrderMod {
+	item: IItem;
+}
+interface IItem {
+	name: string;
+	_id: string;
+}
+
+const OrderMod = ({ item }: IOrderMod) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const toggleModal = () => {
 		setModalOpen(!modalOpen);

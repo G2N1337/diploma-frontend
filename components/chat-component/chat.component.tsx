@@ -76,7 +76,7 @@ const ChatComponent = ({
 }: {
 	chat: string;
 	user: IUser;
-	manager: string;
+	manager: boolean;
 }) => {
 	const [messages, setMessages] = useState([]);
 	const [content, setContent] = useState('');

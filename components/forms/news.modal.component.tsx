@@ -86,7 +86,18 @@ const Image = styled.img`
 	width: 15em;
 	background-color: grey;
 `;
-const NewsModal = ({ item, status }) => {
+interface IItem {
+	name: string;
+	price: number;
+	description: string;
+	picture: string;
+	_id: string;
+}
+interface INewsModal {
+	item: IItem;
+	status: string;
+}
+const NewsModal = ({ item, status }: INewsModal) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
 	const [description, setDescription] = useState(item?.description);
@@ -188,7 +199,7 @@ const NewsModal = ({ item, status }) => {
 				compressedFile instanceof Blob
 			); // true
 			console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-
+			//@ts-ignore
 			setPicture(await toBase64(compressedFile)); // write your own logic
 			console.log({ base64: await toBase64(compressedFile) });
 		} catch (error) {
@@ -215,6 +226,8 @@ const NewsModal = ({ item, status }) => {
 						// value={picture}
 						accept='image/*'
 						onChange={async (e) => {
+							//@ts-ignore
+
 							handleImageUpload(e);
 						}}
 					/>
@@ -247,6 +260,8 @@ const NewsModal = ({ item, status }) => {
 						// value={picture}
 						accept='image/*'
 						onChange={async (e) => {
+							//@ts-ignore
+
 							handleImageUpload(e);
 						}}
 					/>

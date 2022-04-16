@@ -80,7 +80,14 @@ const Form = styled.form`
 		border-bottom: 1px dotted black;
 	}
 `;
-const ModalProgram = ({ item, status }) => {
+interface IItem {
+	name: string;
+	price: number;
+	description: string;
+	image: string;
+	_id: string;
+}
+const ModalProgram = ({ item, status }: { item: IItem; status: string }) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
 	const [price, setPrice] = useState(item?.price);

@@ -60,9 +60,10 @@ const EntertainmentContainer = styled.div`
 	border-bottom: 1px dotted black;
 	width: 100%;
 `;
-const OrderModModal = ({ id }) => {
-	const [order, setOrder] = useState();
+const OrderModModal = ({ id }: { id: string }) => {
+	const [order, setOrder] = useState<IOrder>();
 	const [status, setStatus] = useState('');
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const { isSuccess } = useQuery(
 		'menu-idk',
@@ -90,6 +91,47 @@ const OrderModModal = ({ id }) => {
 			},
 		}
 	);
+	interface IOrder {
+		name: string;
+		status: string;
+		paymentStatus: boolean;
+		workTime: string;
+		price: number;
+		chat: string;
+		menu: IMenuItem;
+		entertainment: IEntertainmentOrder;
+		food: IMenu[];
+		program: IProgram;
+		banquettype: IBanquetType;
+	}
+	interface IEntertainmentOrder {
+		price: number;
+		name: string;
+		entertainments: IEntertainmentItem[];
+	}
+	interface IEntertainmentItem {
+		name: string;
+		price: number;
+		time: number;
+	}
+	interface IMenuItem {
+		name: string;
+		price: number;
+		count: number;
+	}
+	interface IBanquetType {
+		price: number;
+		name: string;
+	}
+	interface IProgram {
+		price: number;
+		name: string;
+	}
+	interface IMenu {
+		_id: string;
+		count: number;
+		name: string;
+	}
 	return (
 		<Form>
 			<p>{order?.name}</p>
@@ -139,7 +181,6 @@ const OrderModModal = ({ id }) => {
 				<EntertainmentList>
 					<div>
 						<h3>Меню:</h3>
-						<p>{order?.food?.name}</p>
 						{order?.food?.map((item) => (
 							<div>
 								<p>{item?.count}</p>

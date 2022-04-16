@@ -46,6 +46,7 @@ const Anchor = styled.a`
 const LoginPage: NextPage = () => {
 	const [login, setLogin] = useState('');
 	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
 	const router = useRouter();
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
@@ -66,6 +67,10 @@ const LoginPage: NextPage = () => {
 				setUser(e.data);
 				sessionStorage.setItem('token', e.data.token);
 				router.push('/');
+				setError('');
+			},
+			onError: (e) => {
+				setError('Возможно вы указали неправильные данные');
 			},
 		}
 	);
@@ -98,6 +103,7 @@ const LoginPage: NextPage = () => {
 				<Button type='submit' onClick={(e) => submit(e)}>
 					Войти
 				</Button>
+				{error && <p>{error}</p>}
 				<Link href={'/register'}>
 					<Anchor>Создать новый аккаунт</Anchor>
 				</Link>

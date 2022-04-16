@@ -43,8 +43,16 @@ const Image = styled.img`
 	width: 15em;
 	background-color: grey;
 `;
-
-const MenuContainer = ({ item }) => {
+interface IItem {
+	_id: string;
+	image: string;
+	count: number;
+	description: string;
+	price: number;
+	name: string;
+}
+const MenuContainer = ({ item }: { item: IItem }) => {
+	//@ts-ignore;
 	const { user, setUser } = useContext(UserContext);
 	const [addMenuModal, setAddMenuModal] = useState(false);
 	const [editMenuModal, setEditMenuModal] = useState(false);

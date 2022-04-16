@@ -107,7 +107,16 @@ const Selector = styled(Select)`
 		display: none;
 	}
 `;
-const MenuItem = ({ item, status, menuList }) => {
+interface IItem {
+	item: string;
+	price: number;
+	description: string;
+	image: string;
+	menuType: string;
+	_id: string;
+	name: string;
+}
+const MenuItem = ({ item, status }: { item: IItem; status: string }) => {
 	const router = useRouter();
 	const [name, setName] = useState(item?.name);
 	const [price, setPrice] = useState(item?.price);

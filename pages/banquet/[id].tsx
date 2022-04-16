@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { useContext, useState } from 'react';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import BanquetModal from '../../components/modal/banquet-modal.component';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { UserContext } from '../../context';
 import ModalBanquet from '../../components/forms/modal-banquet.component';
 import { ModalContent, Model } from '../entertainment/[id]';
@@ -116,11 +116,12 @@ const OrderButton = styled.button`
 const Menu: React.FC = () => {
 	const router = useRouter();
 	const { id } = router.query;
+	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 
 	const [banquetModal, setModal] = useState<boolean>(false);
 	const [banquet, setBanquet] = useState<IBanquet>();
-	const [program, setProgram] = useState<IProgram>();
+	const [program, setProgram] = useState<IProgram[]>();
 	const [addModal, setAddModal] = useState(false);
 	const [editModal, setEditModal] = useState(false);
 	const [addProgramModal, setAddProgramModal] = useState(false);
@@ -217,7 +218,11 @@ const Menu: React.FC = () => {
 				<OrderButton
 					type='button'
 					onClick={() => {
-						setModal(true);
+						if (!user?.login) {
+							toast.error('Нужно войти в учетную запись для создания заказа');
+						} else {
+							setModal(true);
+						}
 					}}
 				>
 					Оставить заявку
