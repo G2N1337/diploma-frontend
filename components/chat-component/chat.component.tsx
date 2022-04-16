@@ -4,6 +4,7 @@ import { useQuery, useMutation } from 'react-query';
 import axios from 'axios';
 import { Oval } from 'react-loader-spinner';
 import moment from 'moment';
+
 const MessageItem = styled.div`
 	max-width: 80%;
 	height: fit-content;

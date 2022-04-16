@@ -90,6 +90,7 @@ const FunContainer = styled.div`
 	padding: 15px;
 `;
 const ContactContainer = styled.div``;
+
 interface IEntertainment {
 	_id: string;
 	name: string;

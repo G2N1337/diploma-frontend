@@ -160,6 +160,7 @@ const NewsModal = ({ item, status }) => {
 			});
 		}
 	};
+
 	const toBase64 = (file: Blob) =>
 		new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -167,6 +168,7 @@ const NewsModal = ({ item, status }) => {
 			reader.onload = () => resolve(reader.result);
 			reader.onerror = (error) => reject(error);
 		});
+
 	const handleImageUpload = async (event: Event) => {
 		const input = event.target as HTMLInputElement;
 
