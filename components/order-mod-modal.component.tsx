@@ -177,6 +177,8 @@ const OrderModModal = ({ id }: { id: string }) => {
 					Отменить
 				</Button>
 			</div>
+			<p>Дата: {order?.workTime}</p>
+
 			<EntertainmentContainer>
 				<EntertainmentList>
 					<div>
