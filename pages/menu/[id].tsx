@@ -243,6 +243,7 @@ const Menu: React.FC = () => {
 					user: user._id,
 					orders: JSON.stringify(order),
 					unique: unique ? true : false,
+					date: date,
 				},
 				{
 					headers: {
@@ -303,8 +304,14 @@ const Menu: React.FC = () => {
 		console.log({ order });
 		e.preventDefault();
 
-		if (order.length > 0) {
+		if (order.length > 0 && date) {
 			mutation.mutate();
+		}
+		if (!date) {
+			toast.error('Выберите дату');
+		}
+		if (order.length === 0) {
+			toast.error('Добавьте пункты в меню');
 		}
 	};
 	return (

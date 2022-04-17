@@ -9,7 +9,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../components/chat-component/chat.component';
 import { useRouter } from 'next/router';
 import OrderMod from '../components/order-mod.component';
-
+const OrderContainer = styled.div`
+	display: grid;
+	grid-gap: 15px;
+	grid-template-columns: 1fr 1fr 1fr;
+	flex-direction: column;
+`;
 const ManagerPage = () => {
 	const router = useRouter();
 	//@ts-ignore
@@ -26,7 +31,7 @@ const ManagerPage = () => {
 		},
 		{
 			onSuccess: (e) => {
-				setOrders(e.data);
+				setOrders(e.data.reverse());
 			},
 		}
 	);
@@ -36,11 +41,11 @@ const ManagerPage = () => {
 		}
 	});
 	return (
-		<div>
+		<OrderContainer>
 			{orders.map((item) => (
 				<OrderMod item={item} key={item._id} />
 			))}
-		</div>
+		</OrderContainer>
 	);
 };
 
