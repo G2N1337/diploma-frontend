@@ -207,6 +207,15 @@ const FoodList = styled.div`
 	margin-top: 2em;
 `;
 const Menu: React.FC = () => {
+	let todayRaw = new Date();
+	let today =
+		todayRaw.getFullYear() +
+		'-' +
+		(todayRaw.getMonth() + 1 < 10
+			? '0' + (todayRaw.getMonth() + 1)
+			: todayRaw.getMonth() + 1 < 10) +
+		'-' +
+		todayRaw.getDate();
 	const router = useRouter();
 	const { id } = router.query;
 	const [openModal, setOpenModal] = useState(false);
@@ -214,14 +223,9 @@ const Menu: React.FC = () => {
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 
-	const [name, setName] = useState(user?.fullName);
 	const [menuField, setMenuField] = useState('');
-	const [description, setDescription] = useState('');
-	const [priceData, setPriceData] = useState<number>(0);
-	const [price, setPrice] = useState<number>(0);
 
-	const [time, setTime] = useState('');
-	const [date, setDate] = useState('');
+	const [date, setDate] = useState(today);
 	const [unique, setUnique] = useState(false);
 	const [menuTypes, setMenuTypes] = useState<IMenu>();
 	const [menuFields, setMenuFields] = useState();
@@ -314,6 +318,7 @@ const Menu: React.FC = () => {
 			toast.error('Добавьте пункты в меню');
 		}
 	};
+
 	return (
 		<Page>
 			<ModalContent>
@@ -326,6 +331,8 @@ const Menu: React.FC = () => {
 							value={date}
 							placeholder={'День'}
 							width={75}
+							min={today}
+							max={todayRaw.getFullYear() + '-12-31'}
 							onChange={(e) => {
 								setDate(e.target.value);
 							}}

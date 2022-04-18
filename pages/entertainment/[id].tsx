@@ -214,6 +214,15 @@ const Entertainment: React.FC = () => {
 		width: 15em;
 		background-color: grey;
 	`;
+	let todayRaw = new Date();
+	let today =
+		todayRaw.getFullYear() +
+		'-' +
+		(todayRaw.getMonth() + 1 < 10
+			? '0' + (todayRaw.getMonth() + 1)
+			: todayRaw.getMonth() + 1 < 10) +
+		'-' +
+		todayRaw.getDate();
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [entertainmentsList, setEntertainmentsList] = useState([]);
@@ -226,7 +235,7 @@ const Entertainment: React.FC = () => {
 	const [description, setDescription] = useState('');
 	const [priceData, setPriceData] = useState<number>(0);
 	const [time, setTime] = useState('');
-	const [date, setDate] = useState('');
+	const [date, setDate] = useState(today);
 	const [entertainments, setEntertainments] = useState<IEntertainment>();
 	const [entArr, setEntArr] = useState<TEntertainment>();
 	// admin
@@ -452,6 +461,7 @@ const Entertainment: React.FC = () => {
 			console.log(error);
 		}
 	};
+
 	return (
 		<Page>
 			<ModalContent>
@@ -562,6 +572,8 @@ const Entertainment: React.FC = () => {
 							value={date}
 							placeholder={'День'}
 							width={75}
+							min={today}
+							max={todayRaw.getFullYear() + '-12-31'}
 							onChange={(e) => {
 								setDate(e.target.value);
 							}}

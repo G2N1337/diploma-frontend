@@ -103,14 +103,24 @@ const Paragraph = styled.p`
 	border-bottom: 1px dotted #c1c1c1;
 `;
 
-const OrderButton = styled.button`
-	padding: 0.6em 1.1em;
-	background-color: #696969;
-	color: #fff;
-	margin-left: 48px;
-	margin-top: 50px;
+const OrderButton = styled.button<{ width?: number }>`
+	width: ${(props) => (props.width ? props.width : 20)}%;
+	border-radius: 4px;
+	height: 38px;
 	border: none;
-	cursor: pointer;
+	background-color: black;
+	/* background: #c1c1c4; */
+	color: white;
+	font-weight: 600;
+	margin-top: 15px;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	margin-left: 25px;
+	margin-right: 25px;
+
+	&:hover {
+		cursor: pointer;
+	}
 `;
 
 const Menu: React.FC = () => {
@@ -181,6 +191,19 @@ const Menu: React.FC = () => {
 			</ModalContent>
 			<Headline>{banquet?.name && <h1>{banquet?.name}</h1>}</Headline>
 			<Container>
+				<OrderButton
+					type='button'
+					width={15}
+					onClick={() => {
+						if (!user?.login) {
+							toast.error('Нужно войти в учетную запись для создания заказа');
+						} else {
+							setModal(true);
+						}
+					}}
+				>
+					Оставить заявку
+				</OrderButton>
 				{user?.role === 'admin' && (
 					<>
 						<Button onClick={toggleEditModal}>Изменить</Button>
@@ -208,25 +231,16 @@ const Menu: React.FC = () => {
 					<Paragraph>{banquet?.description}</Paragraph>
 					<Paragraph>Цена: {banquet?.price}</Paragraph>
 				</MegaContainer>
+
 				<Image src={banquet?.image} />
+
 				<InfoContainer>
 					<InfoBox>
 						{!!program &&
 							program?.map((item: any) => <ProgramComponent item={item} />)}
 					</InfoBox>
 				</InfoContainer>
-				<OrderButton
-					type='button'
-					onClick={() => {
-						if (!user?.login) {
-							toast.error('Нужно войти в учетную запись для создания заказа');
-						} else {
-							setModal(true);
-						}
-					}}
-				>
-					Оставить заявку
-				</OrderButton>
+
 				<ToastContainer position='bottom-left' theme='dark' />
 				<BanquetModal openModal={banquetModal} toggleModal={toggleModal} />
 			</Container>
