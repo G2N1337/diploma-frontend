@@ -103,6 +103,8 @@ const OrderModModal = ({ id }: { id: string }) => {
 		food: IMenu[];
 		program: IProgram;
 		banquettype: IBanquetType;
+		phone: string;
+		createdByManager: boolean;
 	}
 	interface IEntertainmentOrder {
 		price: number;
@@ -136,6 +138,8 @@ const OrderModModal = ({ id }: { id: string }) => {
 		<Form>
 			<p>{order?.name}</p>
 			<p>{status}</p>
+			<p>Номер заказчика: {order?.phone}</p>
+			{order?.createdByManager && <p>Заказ был создан менеджером</p>}
 			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
 			<div>
 				<h2>Изменить статус заказа</h2>

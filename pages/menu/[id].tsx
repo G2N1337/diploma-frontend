@@ -29,7 +29,11 @@ interface IOrderItem {
 	menu: string;
 	count: number;
 }
-
+interface IUserList {
+	_id: string;
+	fullName: string;
+	phone: string;
+}
 const Page = styled.div`
 	height: 100%;
 	display: flex;
@@ -234,7 +238,12 @@ const Menu: React.FC = () => {
 
 	//Заказ
 	const [order, setOrder] = useState<IOrderItem[]>([]);
-
+	//orders for users
+	const [isMod, setIsMod] = useState(false);
+	const [userList, setUserList] = useState<IUserList[]>([]);
+	const [userForOrder, setUserForOrder] = useState();
+	const [isUserRegistered, setIsUserRegistered] = useState(false);
+	const [userPhone, setUserPhone] = useState('');
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
@@ -263,6 +272,79 @@ const Menu: React.FC = () => {
 			},
 		}
 	);
+	const mutationReg = useMutation(
+		async () => {
+			return await axios.post(
+				`http://localhost:5000/menuorder/mod/reg`,
+				{
+					name: `Заказ ${Math.round(Math.random() * 10000)}`,
+					user: userForOrder,
+					orders: JSON.stringify(order),
+					unique: unique ? true : false,
+					date: date,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				}
+			);
+		},
+		{
+			onSuccess: (e) => {
+				console.log(e.data);
+				toast.success(`Заказ успешно создан! Название: ${e.data.name}`);
+			},
+		}
+	);
+	const mutationUnreg = useMutation(
+		async () => {
+			return await axios.post(
+				`http://localhost:5000/menuorder/mod/unreg`,
+				{
+					name: `Заказ ${Math.round(Math.random() * 10000)}`,
+					user: user._id,
+					orders: JSON.stringify(order),
+					unique: unique ? true : false,
+					date: date,
+					phone: userPhone,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				}
+			);
+		},
+		{
+			onSuccess: (e) => {
+				console.log(e.data);
+				toast.success(`Заказ успешно создан! Название: ${e.data.name}`);
+			},
+		}
+	);
+	if (user?.role !== 'user') {
+		useQuery(
+			'get-users',
+			async () => {
+				return await axios.get(`http://localhost:5000/users`, {
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				});
+			},
+			{
+				onSuccess: (e) => {
+					setUserList(
+						e.data?.map((item: { _id: string; fullName: string; phone: string }) => ({
+							value: item._id,
+							label: `${item.fullName} (${item.phone}) `,
+						}))
+					);
+				},
+			}
+		);
+	}
 	useQuery(
 		'menu-idk',
 		async () => {
@@ -305,11 +387,18 @@ const Menu: React.FC = () => {
 	);
 
 	const submit = async (e: React.SyntheticEvent) => {
-		console.log({ order });
 		e.preventDefault();
 
 		if (order.length > 0 && date) {
-			mutation.mutate();
+			if (!isUserRegistered && !isMod) {
+				mutation.mutate();
+			}
+			if (user?.role !== 'user' && isUserRegistered) {
+				mutationReg.mutate();
+			}
+			if (user?.role !== 'user' && !isUserRegistered && isMod) {
+				mutationUnreg.mutate();
+			}
 		}
 		if (!date) {
 			toast.error('Выберите дату');
@@ -386,6 +475,52 @@ const Menu: React.FC = () => {
 								<Paragraph>Выберите меню</Paragraph>
 							)}
 						</FoodList>
+						{user?.role !== 'user' && unique && (
+							<div>
+								<label>Заказать для другого пользователя</label>
+								<input
+									type='checkbox'
+									checked={isMod}
+									onChange={async (e) => {
+										setIsMod(!isMod);
+									}}
+								/>
+								{isMod && userList.length > 0 && (
+									<div>
+										<label>Пользователь зарегистрирован</label>
+										<input
+											type='checkbox'
+											checked={isUserRegistered}
+											onChange={async (e) => {
+												setIsUserRegistered(!isUserRegistered);
+											}}
+										/>
+
+										{isUserRegistered ? (
+											<Selector
+												options={userList}
+												isSearchable={false}
+												placeholder={'Выберите пользователя'}
+												onChange={(e: any) => {
+													setUserForOrder(e.value);
+													console.log(e.value);
+												}}
+											/>
+										) : (
+											<span>
+												<Input
+													value={userPhone}
+													onChange={(e) => {
+														setUserPhone(e.target.value);
+													}}
+													placeholder='Введите номер телефона'
+												/>
+											</span>
+										)}
+									</div>
+								)}
+							</div>
+						)}
 						<ButtonSubmit
 							width={300}
 							onClick={() => {
@@ -415,6 +550,7 @@ const Menu: React.FC = () => {
 				>
 					Заказать
 				</Button>
+
 				<InfoContainer>
 					{!!menu &&
 						menu?.map((item) => <MenuContainer item={item} key={item._id} />)}

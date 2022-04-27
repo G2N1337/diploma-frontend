@@ -208,7 +208,11 @@ const Entertainment: React.FC = () => {
 		_id: string;
 		name: string;
 	}
-
+	interface IUserList {
+		_id: string;
+		fullName: string;
+		phone: string;
+	}
 	const Image = styled.img`
 		height: 15em;
 		width: 15em;
@@ -246,6 +250,13 @@ const Entertainment: React.FC = () => {
 	const [image, setImage] = useState<File>();
 
 	const router = useRouter();
+
+	//orders
+	const [isMod, setIsMod] = useState(false);
+	const [userList, setUserList] = useState<IUserList[]>([]);
+	const [userForOrder, setUserForOrder] = useState();
+	const [isUserRegistered, setIsUserRegistered] = useState(false);
+	const [userPhone, setUserPhone] = useState('');
 	const { id } = router.query;
 	useQuery(
 		'entertainment',
@@ -271,7 +282,6 @@ const Entertainment: React.FC = () => {
 		{
 			onSuccess: (e) => {
 				setEntArr(e.data);
-				console.log(e.data);
 				setEntertainmentsList(
 					e.data?.map((item: IEntertainmentList) => ({
 						value: item?._id,
@@ -281,7 +291,28 @@ const Entertainment: React.FC = () => {
 			},
 		}
 	);
-
+	if (user?.role !== 'user') {
+		useQuery(
+			'get-users',
+			async () => {
+				return await axios.get(`http://localhost:5000/users`, {
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+					},
+				});
+			},
+			{
+				onSuccess: (e) => {
+					setUserList(
+						e.data?.map((item: { _id: string; fullName: string; phone: string }) => ({
+							value: item._id,
+							label: `${item.fullName} (${item.phone}) `,
+						}))
+					);
+				},
+			}
+		);
+	}
 	const toggleModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
@@ -404,18 +435,71 @@ const Entertainment: React.FC = () => {
 	};
 	const submit = (e: React.SyntheticEvent) => {
 		e.preventDefault();
-
 		if (order.length > 0 && date) {
-			//@ts-ignore
-			mutation.mutate({
-				id: user._id,
-				name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
-				entertainments: JSON.stringify(order),
-				price: 0,
-				workTime: date,
-				description: description,
-				unique: unique,
-			});
+			if (user?.role !== 'user' && isUserRegistered) {
+				axios
+					.post(
+						`http://localhost:5000/entorder/mod/reg`,
+						{
+							id,
+							name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
+							entertainments: JSON.stringify(order),
+							price: 0,
+							workTime: date,
+							description,
+							unique,
+							user: userForOrder,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+							},
+						}
+					)
+					.then((e) => {
+						toast.success(
+							`Заявка на проведение развлечения успешно отправлена! Название: ${e.data.name}.`
+						);
+					});
+			}
+			if (user?.role !== 'user' && !isUserRegistered && isMod) {
+				axios
+					.post(
+						`http://localhost:5000/entorder/mod/unreg`,
+						{
+							id,
+							name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
+							entertainments: JSON.stringify(order),
+							price: 0,
+							workTime: date,
+							description,
+							unique,
+							phone: userPhone,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+							},
+						}
+					)
+					.then((e) => {
+						toast.success(
+							`Заявка на проведение развлечения успешно отправлена! Название: ${e.data.name}.`
+						);
+					});
+			}
+			if (!isUserRegistered && !isMod) {
+				//@ts-ignore
+				mutation.mutate({
+					id: user._id,
+					name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
+					entertainments: JSON.stringify(order),
+					price: 0,
+					workTime: date,
+					description: description,
+					unique: unique,
+				});
+			}
 		}
 
 		if (order.length < 1) {
@@ -607,7 +691,52 @@ const Entertainment: React.FC = () => {
 								}}
 							></input>
 						</div>
+						{user?.role !== 'user' && unique && (
+							<div>
+								<label>Заказать для другого пользователя</label>
+								<input
+									type='checkbox'
+									checked={isMod}
+									onChange={async (e) => {
+										setIsMod(!isMod);
+									}}
+								/>
+								{isMod && userList.length > 0 && (
+									<div>
+										<label>Пользователь зарегистрирован</label>
+										<input
+											type='checkbox'
+											checked={isUserRegistered}
+											onChange={async (e) => {
+												setIsUserRegistered(!isUserRegistered);
+											}}
+										/>
 
+										{isUserRegistered ? (
+											<Selector
+												options={userList}
+												isSearchable={false}
+												placeholder={'Выберите пользователя'}
+												onChange={(e: any) => {
+													setUserForOrder(e.value);
+													console.log(e.value);
+												}}
+											/>
+										) : (
+											<span>
+												<Input
+													value={userPhone}
+													onChange={(e) => {
+														setUserPhone(e.target.value);
+													}}
+													placeholder='Введите номер телефона'
+												/>
+											</span>
+										)}
+									</div>
+								)}
+							</div>
+						)}
 						<ButtonSubmit
 							width={300}
 							onClick={() => {

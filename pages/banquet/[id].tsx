@@ -231,7 +231,6 @@ const Menu: React.FC = () => {
 					<Paragraph>{banquet?.description}</Paragraph>
 					<Paragraph>Цена: {banquet?.price}</Paragraph>
 				</MegaContainer>
-
 				<Image src={banquet?.image} />
 
 				<InfoContainer>
