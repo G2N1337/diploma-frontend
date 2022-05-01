@@ -11,6 +11,7 @@ import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../../components/chat-component/chat.component';
 import InputMask from 'react-input-mask';
+import RatingForm from '../../components/place-rating';
 
 interface IWHData {
 	width?: number;
@@ -123,6 +124,9 @@ width: 30%;
 height: 70%;
 background-color: white;
 border-radius: 15px;
+display:flex;
+justify-content:center;
+align-items:center;
 `;
 const PriceLabel = styled.label`
 	margin: 0;
@@ -239,7 +243,7 @@ const Menu: React.FC = () => {
 	//Заказ
 	const [order, setOrder] = useState<IOrder>();
 
-	const toggleModal = (e: React.SyntheticEvent) => {
+	const toggleRatingModal = (e: React.SyntheticEvent) => {
 		setOpenModal(!openModal);
 	};
 	const togglePaymentModal = (e: React.SyntheticEvent) => {
@@ -291,6 +295,7 @@ const Menu: React.FC = () => {
 		}
 	);
 	interface IOrder {
+		_id: string;
 		name: string;
 		status: string;
 		paymentStatus: boolean;
@@ -339,7 +344,18 @@ const Menu: React.FC = () => {
 					Оплатить
 				</Button>
 			)}
+			{order?.status === 'accepted' && (
+				<Button
+					onClick={toggleRatingModal}
+					style={{ backgroundColor: 'black', color: 'white' }}
+				>
+					Оставить отзыв
+				</Button>
+			)}
 			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
+			<Model isOpen={openModal} onBackgroundClick={toggleRatingModal}>
+				<RatingForm order={order?._id} />
+			</Model>
 			<Model isOpen={openPaymentModal} onBackgroundClick={togglePaymentModal}>
 				<Form onSubmit={(e) => submitHandler(e)}>
 					{!success ? (

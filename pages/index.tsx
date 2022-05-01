@@ -11,6 +11,8 @@ import BanquetModal from '../components/modal/banquet-modal.component';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../components/chat-component/chat.component';
+import Rating from '../components/rating';
+import RatingForm from '../components/place-rating';
 const Form = styled.div`
 	min-height: 150px;
 	width: 200px;
@@ -30,11 +32,12 @@ const PhotoBackground = styled.div`
 	align-items: center;
 	background: #e6e1e1;
 `;
-const NewsContainer = styled.div`
+const StuffContainer = styled.div`
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-gap: 1em;
 	justify-items: center;
+	margin-bottom: 5em;
 `;
 const Button = styled.button`
 	border-radius: 4px;
@@ -58,29 +61,52 @@ const Span = styled.span`
 
 const Home: NextPage = () => {
 	const [news, setNews] = useState([]);
+	const [ratings, setRatings] = useState([]);
 	useQuery(
 		'get-news',
 		async () => {
 			return await axios.get(`http://localhost:5000/news`);
 		},
 		{
-			refetchInterval: 3000,
 			onSuccess: (e) => {
 				setNews(e.data.reverse());
 			},
 		}
 	);
-
+	useQuery(
+		'get-testimonials',
+		async () => {
+			return await axios.get(`http://localhost:5000/rating`);
+		},
+		{
+			onSuccess: (e) => {
+				setRatings(e.data.reverse());
+			},
+		}
+	);
 	return (
 		<Page>
 			<PhotoBackground>
 				<Button>Консультация</Button>
 			</PhotoBackground>
-			<Span>Новости и акции</Span>
-			<NewsContainer>
+
+			<Span>Отзывы посетителей (5 последних)</Span>
+
+			<StuffContainer>
+				{ratings.slice(0, 5).map((item) => (
+					<Rating
+						key={item?._id}
+						name={item?.name}
+						value={item?.value}
+						text={item?.text}
+					/>
+				))}
+			</StuffContainer>
+			<Span>Новости и акции (5 последних)</Span>
+			<StuffContainer>
 				{news.slice(0, 5).map((item, i) => (
 					<NewsComponent
-						key={`news-component-${i}`}
+						key={item?._id}
 						name={item?.name}
 						picture={item?.picture}
 						description={item?.description}
@@ -89,8 +115,7 @@ const Home: NextPage = () => {
 					/>
 				))}
 				<ToastContainer position='bottom-left' theme='dark' />
-			</NewsContainer>
-			<Span>Показаны последние 5 новостей</Span>
+			</StuffContainer>
 		</Page>
 	);
 };
