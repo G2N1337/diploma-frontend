@@ -7,8 +7,11 @@ import styled from 'styled-components';
 import { UserContext } from '../../context';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
-
-interface IProps {}
+import { useRouter } from 'next/router';
+import moment from 'moment';
+interface IProps {
+	orderId: string;
+}
 
 interface IFormData {
 	name: string;
@@ -24,11 +27,7 @@ interface IDataDB {
 	_id: string;
 	name: string;
 }
-interface IUserList {
-	_id: string;
-	fullName: string;
-	phone: string;
-}
+
 const FormStyles = styled.form`
 	display: flex;
 	margin: 15px;
@@ -44,49 +43,6 @@ const FormStyles = styled.form`
 		align-items: center;
 		width: 70%;
 		border-bottom: 1px dotted black;
-	}
-`;
-const Input = styled.input<{
-	width?: number;
-	height?: number;
-	onChange?: (e: any) => void;
-}>`
-	box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.07);
-	border-radius: 4px;
-	padding: 0.6rem 1.5rem;
-	border: 0.3px dotted gray;
-	background-color: white;
-	margin-bottom: 15px;
-	height: ${(props) => (props.height ? props.height : 5)}%;
-	width: ${(props) => props.width}%;
-`;
-const Selector = styled(Select)<{ width?: number }>`
-	margin: 0 5px 0 5px;
-	font-weight: 600;
-	width: ${(props) => props.width}%;
-	margin-bottom: 15px;
-	text-align: center;
-	.css-1s2u09g-control {
-		background-color: white;
-		border: 1px dotted black;
-		min-width: 225px;
-	}
-	.css-1pahdxg-control {
-		background-color: white;
-		border: 1px dotted black;
-		min-width: 225px;
-	}
-	.css-tlfecz-indicatorContainer {
-		display: none;
-	}
-	.css-14el2xx-placeholder {
-		color: black;
-	}
-	.css-qc6sy-singleValue {
-		color: black;
-	}
-	.css-1gtu0rj-indicatorContainer {
-		display: none;
 	}
 `;
 const Button = styled.button<{ width?: number }>`
@@ -106,6 +62,7 @@ const Button = styled.button<{ width?: number }>`
 		cursor: pointer;
 	}
 `;
+
 const InputRow = styled.div`
 	width: 75%;
 
@@ -138,7 +95,7 @@ const InputRow = styled.div`
 	}
 `;
 
-export default function HolidayOrder({}: IProps) {
+export default function EditOrder({ orderId }: IProps) {
 	//Для валидации даты
 	let todayRaw = new Date();
 	let today =
@@ -152,28 +109,43 @@ export default function HolidayOrder({}: IProps) {
 
 	//@ts-ignore
 	const { user } = useContext(UserContext);
-
+	const [order, setOrder] = useState();
 	const [data, setData] = useState<IFormData>({
-		name: '',
-		banquet: '',
-		entertainment: '',
-		program: '',
-		menu: '',
+		name: undefined,
+		banquet: undefined,
+		entertainment: undefined,
+		program: undefined,
+		menu: undefined,
 		date: today,
-		commentary: '',
+		commentary: undefined,
 	});
-	React.useEffect(() => {
-		setData({ ...data, name: user?.fullName });
-	}, [user]);
-
-	//ORDERS
-	const [isMod, setIsMod] = useState(false);
-	const [userList, setUserList] = useState<IUserList[]>([]);
-	const [userForOrder, setUserForOrder] = useState();
-	const [isUserRegistered, setIsUserRegistered] = useState(false);
-	const [userPhone, setUserPhone] = useState('');
+	const router = useRouter();
 	//GetHolidays
 	const [holidays, setHolidays] = useState<IDataDB[]>([]);
+	useQuery(
+		'get-order',
+		async () => {
+			return await axios.get(`http://localhost:5000/order-ent/${orderId}`, {
+				headers: {
+					Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+				},
+			});
+		},
+		{
+			onSuccess: (e) => {
+				setOrder(e.data);
+				setData({
+					name: user?.fullName,
+					banquet: e.data.banquettype,
+					commentary: e.data.description,
+					menu: e.data.order,
+					program: e.data.program,
+					entertainment: e.data.entertainment,
+					date: moment(e.data.workTime).format('yyyy-MM-DD'),
+				});
+			},
+		}
+	);
 	useQuery(
 		'get-holidays',
 		async () => {
@@ -235,128 +207,53 @@ export default function HolidayOrder({}: IProps) {
 			},
 		}
 	);
-	if (user?.role !== 'user') {
-		useQuery(
-			'get-users',
-			async () => {
-				return await axios.get(`http://localhost:5000/users`, {
-					headers: {
-						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-					},
-				});
-			},
-			{
-				onSuccess: (e) => {
-					setUserList(
-						e.data?.map((item: { _id: string; fullName: string; phone: string }) => ({
-							value: item._id,
-							label: `${item.fullName} (${item.phone}) `,
-						}))
-					);
-					console.log(e.data);
-				},
-			}
-		);
-	}
 
 	const submitHandler: React.FormEventHandler<HTMLFormElement> = async (
 		e: React.FormEvent<HTMLFormElement>
 	) => {
 		e.preventDefault();
 		const { banquet, program, commentary, date, entertainment, menu } = data;
-		if (!isUserRegistered && !isMod) {
-			await axios
-				.post(
-					`http://localhost:5000/order-ent`,
-					{
-						name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
-						banquetType: banquet,
-						program,
-						commentary,
-						workTime: date,
-						entertainment,
-						order: menu,
+		console.log(data);
+		await axios
+			.put(
+				`http://localhost:5000/order-ent/edit/${orderId}`,
+				{
+					//@ts-ignore
+					name: order?.name,
+					banquetType: banquet,
+					program,
+					description: commentary,
+					workTime: date,
+					entertainment,
+					order: menu,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${sessionStorage.getItem('token')}`,
 					},
-					{
-						headers: {
-							Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-						},
-					}
-				)
-				.then((data) => {
-					toast.success(
-						'Заказ был успешно отправлен! Его название: ' + data.data.name
-					);
-				});
-		}
-		if (user?.role !== 'user' && isUserRegistered) {
-			axios
-				.post(
-					`http://localhost:5000/order-ent/mod/reg`,
-					{
-						name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
-						banquetType: banquet,
-						program,
-						commentary,
-						workTime: date,
-						entertainment,
-						order: menu,
-						user: userForOrder,
-					},
-					{
-						headers: {
-							Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-						},
-					}
-				)
-				.then((e) => {
-					toast.success(
-						`Заявка на проведение развлечения успешно отправлена! Название: ${e.data.name}.`
-					);
-				});
-		}
-		if (user?.role !== 'user' && !isUserRegistered && isMod) {
-			axios
-				.post(
-					`http://localhost:5000/order-ent/mod/unreg`,
-					{
-						name: 'Заказ ' + Math.round(Math.random() * 10000).toString(),
-						banquetType: banquet,
-						program,
-						commentary,
-						workTime: date,
-						entertainment,
-						order: menu,
-						phone: userPhone,
-					},
-					{
-						headers: {
-							Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-						},
-					}
-				)
-				.then((e) => {
-					toast.success(
-						`Заявка на проведение развлечения успешно отправлена! Название: ${e.data.name}.`
-					);
-				});
-		}
+				}
+			)
+			.then((data) => {
+				console.log(data);
+				toast.success('Заказ был успешно изменен! Его название: ' + data.data.name);
+				router.reload();
+			});
 	};
 
-	useEffect(() => {
-		setData({
-			...data,
-			name: user?.fullName,
-			banquet: banquetes[0]?._id,
-			entertainment: entertainments[0]?._id,
-			menu: orders[0]?._id,
-			program: holidays[0]?._id,
-		});
-	}, [holidays, entertainments, banquetes, orders]);
+	// useEffect(() => {
+	// 	setData({
+	// 		...data,
+	// 		name: user?.fullName,
+	// 		banquet: banquetes[0]?._id,
+	// 		entertainment: entertainments[0]?._id,
+	// 		menu: orders[0]?._id,
+	// 		program: holidays[0]?._id,
+	// 	});
+	// }, [holidays, entertainments, banquetes, orders]);
 
 	return (
 		<FormStyles onSubmit={submitHandler}>
-			<h1>Заказать праздник</h1>
+			<h1>Изменить заказ</h1>
 
 			{/* Имя */}
 			<InputRow>
@@ -391,6 +288,7 @@ export default function HolidayOrder({}: IProps) {
 									{holiday.name}
 								</option>
 							))}
+						<option value={''}>Нет</option>
 					</select>
 				</label>
 			</InputRow>
@@ -407,12 +305,14 @@ export default function HolidayOrder({}: IProps) {
 						<option defaultChecked disabled>
 							Выберите развлечение
 						</option>
+
 						{entertainments &&
 							entertainments.map((entertainment: { name: string; _id: string }) => (
 								<option key={entertainment._id} value={entertainment._id}>
 									{entertainment.name}
 								</option>
 							))}
+						<option value={''}>Нет</option>
 					</select>
 				</label>
 			</InputRow>
@@ -435,6 +335,7 @@ export default function HolidayOrder({}: IProps) {
 									{menu.name}
 								</option>
 							))}
+						<option value={''}>Нет</option>
 					</select>
 				</label>
 			</InputRow>
@@ -455,6 +356,7 @@ export default function HolidayOrder({}: IProps) {
 									{holiday.name}
 								</option>
 							))}
+						<option value={''}>Нет</option>
 					</select>
 				</label>
 			</InputRow>
@@ -489,53 +391,6 @@ export default function HolidayOrder({}: IProps) {
 					/>
 				</label>
 			</InputRow>
-			{user?.role !== 'user' && (
-				<div>
-					<label>Заказать для другого пользователя</label>
-					<input
-						type='checkbox'
-						checked={isMod}
-						onChange={async (e) => {
-							setIsMod(!isMod);
-						}}
-					/>
-					{isMod && userList.length > 0 && (
-						<div>
-							<label>Пользователь зарегистрирован</label>
-							<input
-								type='checkbox'
-								checked={isUserRegistered}
-								onChange={async (e) => {
-									setIsUserRegistered(!isUserRegistered);
-								}}
-							/>
-
-							{isUserRegistered ? (
-								<Selector
-									options={userList}
-									isSearchable={false}
-									placeholder={'Выберите пользователя'}
-									onChange={(e: any) => {
-										setUserForOrder(e.value);
-										console.log(e.value);
-									}}
-								/>
-							) : (
-								<span>
-									<Input
-										value={userPhone}
-										onChange={(e) => {
-											setUserPhone(e.target.value);
-										}}
-										placeholder='Введите номер телефона'
-									/>
-								</span>
-							)}
-						</div>
-					)}
-				</div>
-			)}
-			{/* Кнопка подтверждения */}
 			<Button style={{ backgroundColor: 'black', color: 'white' }} type='submit'>
 				Отправить
 			</Button>

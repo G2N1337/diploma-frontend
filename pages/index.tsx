@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../components/chat-component/chat.component';
 import Rating from '../components/rating';
 import RatingForm from '../components/place-rating';
+import EditOrder from '../components/forms/edit-order.component';
 const Form = styled.div`
 	min-height: 150px;
 	width: 200px;

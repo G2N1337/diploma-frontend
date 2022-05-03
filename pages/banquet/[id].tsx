@@ -148,9 +148,7 @@ const Menu: React.FC = () => {
 	const toggleProgramAddModal = () => {
 		setAddProgramModal(!addProgramModal);
 	};
-	const toggleProgramEditModal = () => {
-		setEditProgramModal(!editProgramModal);
-	};
+
 	useQuery(
 		'banquet',
 		async () => {

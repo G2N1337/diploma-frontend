@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from '../../components/chat-component/chat.component';
 import InputMask from 'react-input-mask';
 import RatingForm from '../../components/place-rating';
+import EditOrder from '../../components/forms/edit-order.component';
 
 interface IWHData {
 	width?: number;
@@ -188,9 +189,7 @@ const BigInput = styled.textarea<{ height: number; width: number }>`
 	border: 0.3px dotted gray;
 	background-color: white;
 	margin-bottom: 15px;
-	//@ts-ignore
 	height: ${(props) => (props.height ? props.height : 5)}%;
-	//@ts-ignore
 
 	width: ${(props) => props.width}%;
 	resize: none;
@@ -230,6 +229,7 @@ const Menu: React.FC = () => {
 	const { id } = router.query;
 	const [openModal, setOpenModal] = useState(false);
 	const [openPaymentModal, setOpenPaymentModal] = useState(false);
+	const [editModal, setEditModal] = useState(false);
 	//@ts-ignore
 	const { user, setUser } = useContext(UserContext);
 	const [name, setName] = useState(user?.fullName);
@@ -248,6 +248,9 @@ const Menu: React.FC = () => {
 	};
 	const togglePaymentModal = (e: React.SyntheticEvent) => {
 		setOpenPaymentModal(!openPaymentModal);
+	};
+	const toggleEditModal = () => {
+		setEditModal(!editModal);
 	};
 	const submitHandler = (e: React.SyntheticEvent) => {
 		e.preventDefault();
@@ -352,9 +355,28 @@ const Menu: React.FC = () => {
 					Оставить отзыв
 				</Button>
 			)}
+			{isSuccess && (
+				<Button
+					style={{ backgroundColor: 'black', color: 'white' }}
+					onClick={() => {
+						axios.get(`http://localhost:5000/order-ent/edit/${order?._id}`, {
+							headers: {
+								Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+							},
+						});
+						toggleEditModal();
+					}}
+				>
+					Изменить заказ
+				</Button>
+			)}
+
 			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
 			<Model isOpen={openModal} onBackgroundClick={toggleRatingModal}>
 				<RatingForm order={order?._id} />
+			</Model>
+			<Model isOpen={editModal} onBackgroundClick={toggleEditModal}>
+				<EditOrder orderId={order?._id} />
 			</Model>
 			<Model isOpen={openPaymentModal} onBackgroundClick={togglePaymentModal}>
 				<Form onSubmit={(e) => submitHandler(e)}>
