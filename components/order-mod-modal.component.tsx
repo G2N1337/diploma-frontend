@@ -96,6 +96,7 @@ const OrderModModal = ({ id }: { id: string }) => {
 		status: string;
 		paymentStatus: boolean;
 		workTime: string;
+		description: string;
 		price: number;
 		chat: string;
 		menu: IMenuItem;
@@ -141,6 +142,11 @@ const OrderModModal = ({ id }: { id: string }) => {
 			<p>Номер заказчика: {order?.phone}</p>
 			{order?.createdByManager && <p>Заказ был создан менеджером</p>}
 			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
+			{order?.description && order?.description.length > 1 ? (
+				<p>Комментарий: {order?.description}</p>
+			) : (
+				<p>Без комментариев</p>
+			)}{' '}
 			<div>
 				<h2>Изменить статус заказа</h2>
 
@@ -182,7 +188,6 @@ const OrderModModal = ({ id }: { id: string }) => {
 				</Button>
 			</div>
 			<p>Дата: {order?.workTime}</p>
-
 			<EntertainmentContainer>
 				<EntertainmentList>
 					<div>

@@ -293,13 +293,13 @@ const Menu: React.FC = () => {
 		{
 			onSuccess: (e) => {
 				setOrder(e.data);
-				console.log(e.data);
 			},
 		}
 	);
 	interface IOrder {
 		_id: string;
 		name: string;
+		description: string;
 		status: string;
 		paymentStatus: boolean;
 		workTime: string;
@@ -354,6 +354,11 @@ const Menu: React.FC = () => {
 				>
 					Оставить отзыв
 				</Button>
+			)}
+			{order?.description && order?.description.length > 1 ? (
+				<p>Комментарий: {order?.description}</p>
+			) : (
+				<p>Без комментариев</p>
 			)}
 			{isSuccess && (
 				<Button
