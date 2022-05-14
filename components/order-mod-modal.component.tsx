@@ -142,6 +142,7 @@ const OrderModModal = ({ id }: { id: string }) => {
 			<p>Номер заказчика: {order?.phone}</p>
 			{order?.createdByManager && <p>Заказ был создан менеджером</p>}
 			{order?.paymentStatus === true && <h2>Заказ был оплачен</h2>}
+			{console.log(order)}
 			{order?.description && order?.description.length > 1 ? (
 				<p>Комментарий: {order?.description}</p>
 			) : (

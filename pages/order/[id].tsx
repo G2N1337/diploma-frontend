@@ -293,6 +293,7 @@ const Menu: React.FC = () => {
 		{
 			onSuccess: (e) => {
 				setOrder(e.data);
+				console.log(e.data);
 			},
 		}
 	);
