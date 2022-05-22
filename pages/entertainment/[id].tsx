@@ -238,6 +238,7 @@ const Entertainment: React.FC = () => {
 	const [entField, setEntField] = useState('');
 	const [description, setDescription] = useState('');
 	const [priceData, setPriceData] = useState<number>(0);
+	const [startHour, setStartHour] = useState(8);
 	const [time, setTime] = useState('');
 	const [date, setDate] = useState(today);
 	const [entertainments, setEntertainments] = useState<IEntertainment>();
@@ -333,6 +334,7 @@ const Entertainment: React.FC = () => {
 					price: 0,
 					workTime: date,
 					description,
+					startHour,
 					unique,
 				},
 				{
@@ -348,6 +350,9 @@ const Entertainment: React.FC = () => {
 					`Заявка на проведение развлечения успешно отправлена! Название: ${e.data.name}.`
 				);
 				console.log(e);
+			},
+			onError: (e) => {
+				toast.error('Возникла ошибка, скорее всего на это время уже занято.');
 			},
 		}
 	);
@@ -496,6 +501,7 @@ const Entertainment: React.FC = () => {
 					entertainments: JSON.stringify(order),
 					price: 0,
 					workTime: date,
+					startHour,
 					description: description,
 					unique: unique,
 				});
@@ -690,6 +696,21 @@ const Entertainment: React.FC = () => {
 									setUnique(!unique);
 								}}
 							></input>
+							{unique && (
+								<>
+									<label>К какому часу?</label>
+									<Input
+										onChange={(e) => {
+											setStartHour(e.target.value);
+										}}
+										max={23}
+										min={8}
+										type='number'
+										value={startHour}
+										placeholder='К какому часу?'
+									/>
+								</>
+							)}
 						</div>
 						{user?.role !== 'user' && unique && (
 							<div>

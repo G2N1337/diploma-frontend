@@ -76,6 +76,7 @@ const EntertainmentContainer = ({
 			<Paragraph>{varietyPrice}</Paragraph>
 			<input
 				type='number'
+				max={3}
 				value={inputValue}
 				onChange={(e) => setInputValue(parseInt(e.target.value))}
 			></input>

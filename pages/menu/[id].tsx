@@ -233,6 +233,7 @@ const Menu: React.FC = () => {
 	const [unique, setUnique] = useState(false);
 	const [menuTypes, setMenuTypes] = useState<IMenu>();
 	const [menuFields, setMenuFields] = useState();
+	const [startHour, setStartHour] = useState(8);
 
 	const [menu, setMenu] = useState<any[]>([]);
 
@@ -257,6 +258,7 @@ const Menu: React.FC = () => {
 					orders: JSON.stringify(order),
 					unique: unique ? true : false,
 					date: date,
+					startHour,
 				},
 				{
 					headers: {
@@ -269,6 +271,9 @@ const Menu: React.FC = () => {
 			onSuccess: (e) => {
 				console.log(e.data);
 				toast.success(`Заказ успешно создан! Название: ${e.data.name}`);
+			},
+			onError: (e) => {
+				toast.error('Возникла ошибка, скорее всего на это время уже занято.');
 			},
 		}
 	);
@@ -475,6 +480,21 @@ const Menu: React.FC = () => {
 								<Paragraph>Выберите меню</Paragraph>
 							)}
 						</FoodList>
+						{unique && (
+							<>
+								<label>К какому часу?</label>
+								<Input
+									onChange={(e) => {
+										setStartHour(parseInt(e.target.value));
+									}}
+									max={23}
+									min={8}
+									type='number'
+									value={startHour}
+									placeholder='К какому часу?'
+								/>
+							</>
+						)}
 						{user?.role !== 'user' && unique && (
 							<div>
 								<label>Заказать для другого пользователя</label>

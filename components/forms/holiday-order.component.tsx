@@ -172,6 +172,7 @@ export default function HolidayOrder({}: IProps) {
 	const [userForOrder, setUserForOrder] = useState();
 	const [isUserRegistered, setIsUserRegistered] = useState(false);
 	const [userPhone, setUserPhone] = useState('');
+	const [startHour, setStartHour] = useState(8);
 	//GetHolidays
 	const [holidays, setHolidays] = useState<IDataDB[]>([]);
 	useQuery(
@@ -276,6 +277,7 @@ export default function HolidayOrder({}: IProps) {
 						workTime: date,
 						entertainment,
 						order: menu,
+						startHour,
 					},
 					{
 						headers: {
@@ -287,6 +289,10 @@ export default function HolidayOrder({}: IProps) {
 					toast.success(
 						'Заказ был успешно отправлен! Его название: ' + data.data.name
 					);
+				})
+				.catch((data) => {
+					console.log(data);
+					toast.error('Возникла ошибка, скорее всего на это время уже занято.');
 				});
 		}
 		if (user?.role !== 'user' && isUserRegistered) {
@@ -302,6 +308,7 @@ export default function HolidayOrder({}: IProps) {
 						entertainment,
 						order: menu,
 						user: userForOrder,
+						startHour,
 					},
 					{
 						headers: {
@@ -328,6 +335,7 @@ export default function HolidayOrder({}: IProps) {
 						entertainment,
 						order: menu,
 						phone: userPhone,
+						startHour,
 					},
 					{
 						headers: {
@@ -489,6 +497,21 @@ export default function HolidayOrder({}: IProps) {
 					/>
 				</label>
 			</InputRow>
+
+			<InputRow>
+				<label>К какому часу?</label>
+				<Input
+					onChange={(e) => {
+						setStartHour(e.target.value);
+					}}
+					max={23}
+					min={8}
+					type='number'
+					value={startHour}
+					placeholder='К какому часу?'
+				/>
+			</InputRow>
+
 			{user?.role !== 'user' && (
 				<div>
 					<label>Заказать для другого пользователя</label>
