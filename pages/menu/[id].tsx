@@ -287,6 +287,7 @@ const Menu: React.FC = () => {
 					orders: JSON.stringify(order),
 					unique: unique ? true : false,
 					date: date,
+					startHour,
 				},
 				{
 					headers: {
@@ -313,6 +314,7 @@ const Menu: React.FC = () => {
 					unique: unique ? true : false,
 					date: date,
 					phone: userPhone,
+					startHour,
 				},
 				{
 					headers: {
